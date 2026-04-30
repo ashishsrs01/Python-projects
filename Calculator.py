@@ -33,7 +33,7 @@ def cube_root(a):
 
 def calculator():
     print("welcome to calculator")
-    print("Select Operatinons:")
+    print("Select Operations:")
     print("1. Add")
     print("2. Subtraction")
     print("3. Multiplication")
@@ -52,27 +52,37 @@ def calculator():
             break
 
         elif choice in ["1", "2", "3", "4", "5"]:
-
             n1 = float(input("Enter First Number: "))
             n2 = float(input("Enter Second Number: "))
 
-            if choice == 1:
-                print(f"{n1} + {n2} = {add(n1,n2)}")
-            elif choice == 2:
-                print(f"{n1} - {n2} = {subtract(n1,n2)}")
-            elif choice == 3:
-                print(f"{n1} * {n2} = {multiply(n1,n2)}")
-            elif choice == 4:
-                print(f"{n1} / {n2} = {divide(n1,n2)}")
-            elif choice == 5:
-                print(f"{n1} ^ {n2} = {power(n1,n2)}")
-            elif choice == 6:
-                print(f"sqrt({n1}) = {sqrt(n1)}")
-            elif choice == 7:
-                print(f"cube_root({n1}) = {cube_root(n1)}")
+            if choice == "1":
+                result = add(n1, n2)
+                print(f"{n1} + {n2} = {result:.2f}")
+            elif choice == "2":
+                result = subtract(n1, n2)
+                print(f"{n1} - {n2} = {result:.2f}")
+            elif choice == "3":
+                result = multiply(n1, n2)
+                print(f"{n1} * {n2} = {result:.2f}")
+            elif choice == "4":
+                result = divide(n1, n2)
+                print(f"{n1} / {n2} = {result:.2f}")
+            elif choice == "5":
+                result = power(n1, n2)
+                print(f"{n1} ^ {n2} = {result:.2f}")
+
+        elif choice == "6":
+            n1 = float(input("Enter Number: "))
+            result = sqrt(n1)
+            print(f"sqrt({n1}) = {result:.4f}")
+
+        elif choice == "7":
+            n1 = float(input("Enter Number: "))
+            result = cube_root(n1)
+            print(f"cube_root({n1}) = {result:.4f}")
 
         else:
-            print("Invalid choice. PLease select a valid opeartion (1-8).")
+            print("Invalid choice. Please select a valid operation (1-8).")
 
 
 if __name__ == "__main__":
