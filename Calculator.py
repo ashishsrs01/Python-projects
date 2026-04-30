@@ -41,13 +41,16 @@ def calculator():
     print("5. Power")
     print("6. Square Root")
     print("7. Cube Root")
-    print("8. Exit")
+    print("8. History")
+    print("9. Exit")
+
+    history = []
 
     while True:
 
-        choice = input("Enter Choice (1-8): ")
+        choice = input("Enter Choice (1-9): ")
 
-        if choice == "8":
+        if choice == "9":
             print("Exiting Calculator. Goodbye!")
             break
 
@@ -58,31 +61,48 @@ def calculator():
             if choice == "1":
                 result = add(n1, n2)
                 print(f"{n1} + {n2} = {result:.2f}")
+                history.append(f"{n1} + {n2} = {result:.2f}")
             elif choice == "2":
                 result = subtract(n1, n2)
                 print(f"{n1} - {n2} = {result:.2f}")
+                history.append(f"{n1} - {n2} = {result:.2f}")
             elif choice == "3":
                 result = multiply(n1, n2)
                 print(f"{n1} * {n2} = {result:.2f}")
+                history.append(f"{n1} * {n2} = {result:.2f}")
             elif choice == "4":
                 result = divide(n1, n2)
                 print(f"{n1} / {n2} = {result:.2f}")
+                history.append(f"{n1} / {n2} = {result:.2f}")
             elif choice == "5":
                 result = power(n1, n2)
                 print(f"{n1} ^ {n2} = {result:.2f}")
+                history.append(f"{n1} ^ {n2} = {result:.2f}")
 
         elif choice == "6":
             n1 = float(input("Enter Number: "))
             result = sqrt(n1)
             print(f"sqrt({n1}) = {result:.4f}")
+            history.append(f"sqrt({n1}) = {result:.4f}")
 
         elif choice == "7":
             n1 = float(input("Enter Number: "))
             result = cube_root(n1)
             print(f"cube_root({n1}) = {result:.4f}")
+            history.append(f"cube_root({n1}) = {result:.4f}")
+
+        elif choice == "8":
+            if not history:
+                print("No calculation history yet.")
+            else:
+                print("\nCalculation History (Last 3 records):")
+                for i, record in enumerate(history[-3:], 1):
+                    print(f"{i}. {record}")
+                print()
 
         else:
-            print("Invalid choice. Please select a valid operation (1-8).")
+            print("Invalid choice. Please select a valid operation (1-9).")
+
 
 
 if __name__ == "__main__":
