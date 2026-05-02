@@ -23,12 +23,32 @@ def play_game():
     score = {'user': 0, 'computer': 0}
     
     print("Welcome to Rock-Paper-Scissors Game!")
-    print("Type 'rock', 'paper', or 'scissors' to play. Type 'scores' to view current scores, or 'quit' to exit the game.")
+    print("Type 'rock 🪨', 'paper 📃', or 'scissors ✂️' to play. Type 'scores 💯' to view current scores, or 'quit👋' to exit the game.")
 
     while True:
         user_choice = input().lower()
 
-        if user_choice == 'quit':
+        if user_choice in ['rock', 'paper', 'scissors']:
+            if user_choice == 'rock':
+                user_choice = 'rock 🪨'
+            elif user_choice == 'paper':
+                user_choice = 'paper 📃'
+            elif user_choice == 'scissors':
+                user_choice = 'scissors ✂️'
+            print(f"You chose: {user_choice}")
+            
+            computer_choice = get_computer_choice()
+            if computer_choice == 'rock':
+                computer_choice = 'rock 🪨'
+            elif computer_choice == 'paper':
+                computer_choice = 'paper 📃'
+            elif computer_choice == 'scissors':
+                computer_choice = 'scissors ✂️'
+            print(f"Computer chose: {computer_choice}")
+            result = get_winner(user_choice, computer_choice)
+            print(result)
+
+        elif user_choice == 'quit':
             print("Thanks for playing!")
             if score['user'] > score['computer']:
                 print(f"Current Score - You: {score['user']} | Computer: {score['computer']} - You won! 🎉")
@@ -51,10 +71,7 @@ def play_game():
                 print("It's an invalid choice. Please choose rock, paper, scissors, 'scores' or 'quit'.")
                 continue
 
-        computer_choice = get_computer_choice()
-        print(f"Computer chose: {computer_choice}")
-        result = get_winner(user_choice, computer_choice)
-        print(result)
+        
 
         if result == "You win!":
             score['user'] += 1
