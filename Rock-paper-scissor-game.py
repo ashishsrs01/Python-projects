@@ -47,8 +47,9 @@ def play_game():
                 print(f"Current Score - You: {score['user']} | Computer: {score['computer']} - It's a tie going strong! 🤝")
         
         else:
-            print("it's invalid choice. Please choose rock, paper, scissors, 'scores' or 'quit'.")
-            continue
+            if user_choice not in ['rock', 'paper', 'scissors', 'scores', 'quit']:
+                print("It's an invalid choice. Please choose rock, paper, scissors, 'scores' or 'quit'.")
+                continue
 
         computer_choice = get_computer_choice()
         print(f"Computer chose: {computer_choice}")
@@ -60,5 +61,7 @@ def play_game():
         elif result == "Computer wins!":
             score['computer'] += 1
 
-    
+
+if __name__ == "__main__":
+    play_game()
 
