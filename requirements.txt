@@ -1,0 +1,6 @@
+flask==3.0.0
+rembg==2.0.75
+onnxruntime-gpu==1.25.1
+pillow==12.2.0
+numpy
+tkinter
