@@ -1,62 +1,55 @@
-import tkinter as tk
-from tkinter import messagebox
 import time
+import sys
 
-class CountdownTimer:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Countdown Timer")
-        self.root.geometry("300x200")
-        
-        # Label for instructions
-        self.label = tk.Label(root, text="Enter seconds:", font=("Arial", 12))
-        self.label.pack(pady=10)
-        
-        # Entry for input
-        self.entry = tk.Entry(root, font=("Arial", 12))
-        self.entry.pack(pady=5)
-        
-        # Button to start
-        self.start_button = tk.Button(root, text="Start Timer", command=self.start_timer, font=("Arial", 12))
-        self.start_button.pack(pady=10)
-        
-        # Label to display countdown
-        self.timer_label = tk.Label(root, text="", font=("Arial", 20))
-        self.timer_label.pack(pady=20)
-        
-        self.remaining_seconds = 0
-    
-    def start_timer(self):
+
+def countdown_timer():
+    print("\n" + "="*50)
+    print("\033[1;36m" + "COUNTDOWN TIMER".center(50) + "\033[0m")
+    print("="*50 + "\n")
+
+    while True:
         try:
-            seconds = int(self.entry.get())
+            seconds = int(input("\033[1;33mEnter seconds for the timer: \033[0m"))
             if seconds <= 0:
-                messagebox.showerror("Error", "Please enter a positive number greater than 0!")
-                return
-            self.remaining_seconds = seconds
-            self.start_button.config(state="disabled")
-            self.entry.config(state="disabled")
-            self.update_timer()
+                print("\033[91mPlease enter a positive number greater than 0!\033[0m\n")
+                continue
+            break
         except ValueError:
-            messagebox.showerror("Error", "Please enter a valid number!")
-    
-    def update_timer(self):
-        if self.remaining_seconds > 0:
-            mins = self.remaining_seconds // 60
-            secs = self.remaining_seconds % 60
-            timer_display = f"{mins:02d}:{secs:02d}"
-            self.timer_label.config(text=timer_display)
-            self.remaining_seconds -= 1
-            self.root.after(1000, self.update_timer)
-        else:
-            self.timer_label.config(text="Time's up! ⏰")
-            messagebox.showinfo("Timer", "Beep! Beep! Beep!")
-            self.start_button.config(state="normal")
-            self.entry.config(state="normal")
+            print("\033[91mPlease enter a valid number!\033[0m\n")
 
-def main():
-    root = tk.Tk()
-    app = CountdownTimer(root)
-    root.mainloop()
+    print("\n\033[92mTimer started!\033[0m\n")
+    
+    remaining_seconds = seconds
+    
+    while remaining_seconds > 0:
+        mins = remaining_seconds // 60
+        secs = remaining_seconds % 60
+        timer_display = f"{mins:02d}:{secs:02d}"
+        
+        # Clear line and display timer
+        sys.stdout.write(f"\r\033[1;36m{timer_display}\033[0m")
+        sys.stdout.flush()
+        
+        time.sleep(1)
+        remaining_seconds -= 1
+    
+    print("\r\033[1;32m00:00 ✓ Time's up! ⏰\033[0m\n")
+    print("\033[1;33m🔔 Beep! Beep! Beep! 🔔\033[0m\n")
+    
+    while True:
+        again = input("\033[1;33mDo you want to set another timer? (yes/no): \033[0m").strip().lower()
+        if again in ['yes', 'y']:
+            print()
+            countdown_timer()
+            break
+        elif again in ['no', 'n']:
+            print("\n" + "="*50)
+            print("\033[1;32m" + "Thanks for using the timer! Goodbye!".center(50) + "\033[0m")
+            print("="*50 + "\n")
+            break
+        else:
+            print("\033[91mPlease enter 'yes' or 'no'.\033[0m\n")
+
 
 if __name__ == "__main__":
-    main()
+    countdown_timer()

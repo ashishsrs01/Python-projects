@@ -1,6 +1,4 @@
 import random
-import tkinter as tk
-from tkinter import messagebox
 
 # Global score values
 score_user = 0
@@ -23,80 +21,64 @@ def get_winner(user_choice, computer_choice):
         return "Computer wins!"
 
 
-def choose_move(user_choice):
+def play_game():
     global score_user, score_computer
 
-    computer_choice = get_computer_choice()
-    result = get_winner(user_choice, computer_choice)
+    print("\n" + "="*50)
+    print("\033[1;36m" + "ROCK PAPER SCISSORS GAME".center(50) + "\033[0m")
+    print("="*50 + "\n")
 
-    if result == "You win!":
-        score_user += 1
-    elif result == "Computer wins!":
-        score_computer += 1
+    while True:
+        print("\033[1;33mChoose your move:\033[0m")
+        print("  \033[92m1.\033[0m Rock")
+        print("  \033[92m2.\033[0m Paper")
+        print("  \033[92m3.\033[0m Scissors")
+        print("  \033[92m4.\033[0m View Score")
+        print("  \033[92m5.\033[0m Reset Score")
+        print("  \033[91m6.\033[0m Quit")
+        print()
 
-    user_label.config(text=f"You chose: {user_choice}")
-    computer_label.config(text=f"Computer chose: {computer_choice}")
-    result_label.config(text=result)
-    score_label.config(text=f"Score - You: {score_user}  Computer: {score_computer}")
+        choice = input("Enter your choice (1-6): ").strip()
+
+        if choice == "1":
+            user_choice = "rock"
+        elif choice == "2":
+            user_choice = "paper"
+        elif choice == "3":
+            user_choice = "scissors"
+        elif choice == "4":
+            print(f"\n\033[1;36mCurrent Score:\033[0m")
+            print(f"  You: \033[92m{score_user}\033[0m")
+            print(f"  Computer: \033[92m{score_computer}\033[0m\n")
+            continue
+        elif choice == "5":
+            score_user = 0
+            score_computer = 0
+            print("\n\033[93mScore has been reset!\033[0m\n")
+            continue
+        elif choice == "6":
+            print("\n" + "="*50)
+            print("\033[1;32m" + "Thanks for playing! Goodbye!".center(50) + "\033[0m")
+            print("="*50 + "\n")
+            break
+        else:
+            print("\033[91mInvalid choice. Please select 1-6.\033[0m\n")
+            continue
+
+        computer_choice = get_computer_choice()
+        result = get_winner(user_choice, computer_choice)
+
+        if result == "You win!":
+            score_user += 1
+        elif result == "Computer wins!":
+            score_computer += 1
+
+        print(f"\n\033[1;36mYou chose:\033[0m \033[92m{user_choice.upper()}\033[0m")
+        print(f"\033[1;36mComputer chose:\033[0m \033[92m{computer_choice.upper()}\033[0m")
+        print(f"\033[1;33m{result}\033[0m")
+        print(f"Score - You: \033[92m{score_user}\033[0m  Computer: \033[92m{score_computer}\033[0m\n")
 
 
-def reset_score():
-    global score_user, score_computer
-    score_user = 0
-    score_computer = 0
-    user_label.config(text="You chose: -")
-    computer_label.config(text="Computer chose: -")
-    result_label.config(text="Result: -")
-    score_label.config(text="Score - You: 0  Computer: 0")
-
-
-def quit_game():
-    if messagebox.askyesno("Quit", "Do you want to quit the game?"):
-        root.destroy()
-
-
-root = tk.Tk()
-root.title("Rock Paper Scissors")
-root.geometry("320x280")
-root.resizable(False, False)
-
-header = tk.Label(root, text="Rock Paper Scissors", font=("Arial", 16, "bold"))
-header.pack(pady=10)
-
-info = tk.Label(root, text="Choose your move below:", font=("Arial", 11))
-info.pack()
-
-button_frame = tk.Frame(root)
-button_frame.pack(pady=8)
-
-rock_button = tk.Button(button_frame, text="Rock", width=8, command=lambda: choose_move('rock'))
-paper_button = tk.Button(button_frame, text="Paper", width=8, command=lambda: choose_move('paper'))
-scissors_button = tk.Button(button_frame, text="Scissors", width=8, command=lambda: choose_move('scissors'))
-
-rock_button.grid(row=0, column=0, padx=5)
-paper_button.grid(row=0, column=1, padx=5)
-scissors_button.grid(row=0, column=2, padx=5)
-
-user_label = tk.Label(root, text="You chose: -", font=("Arial", 11))
-user_label.pack(pady=4)
-
-computer_label = tk.Label(root, text="Computer chose: -", font=("Arial", 11))
-computer_label.pack(pady=4)
-
-result_label = tk.Label(root, text="Result: -", font=("Arial", 12, "bold"))
-result_label.pack(pady=6)
-
-score_label = tk.Label(root, text="Score - You: 0  Computer: 0", font=("Arial", 11))
-score_label.pack(pady=4)
-
-control_frame = tk.Frame(root)
-control_frame.pack(pady=10)
-
-reset_button = tk.Button(control_frame, text="Reset Score", width=12, command=reset_score)
-quit_button = tk.Button(control_frame, text="Quit", width=12, command=quit_game)
-
-reset_button.grid(row=0, column=0, padx=5)
-quit_button.grid(row=0, column=1, padx=5)
-
-root.mainloop()
+if __name__ == "__main__":
+    play_game()
 
