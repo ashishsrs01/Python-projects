@@ -1,4 +1,13 @@
-def counter(text):
+def counter(n):
+
+
+
+
+
+
+
+
+def word_counter(text):
     word_count = {}
 
     for word in text.split():
@@ -9,8 +18,15 @@ def counter(text):
             word_count[word] = 1
 
     return word_count
-def 
+
+def alphabetical_counter(text):
+    count = 0
+    letter = input("Enter a letter to count: ").lower()
+    for char in text:
+        if char.lower() == letter:
+            count +=1
+    return count
+
+
 if __name__ == "__main__":
-    text = "Hello world! Hello everyone."
-    result = counter(text)
-    print(result)
+    
