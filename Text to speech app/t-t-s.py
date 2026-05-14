@@ -149,4 +149,8 @@ def main():
             print("⚠️  Invalid choice. Please enter a number from 1 to 5.")
 
 
-
+# -------------------------------------------------------
+# Run the program
+# -------------------------------------------------------
+if __name__ == "__main__":
+    main()
