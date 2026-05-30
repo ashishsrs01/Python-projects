@@ -1,0 +1,56 @@
+[
+  {
+    "id": "calculator",
+    "name": "Calculator",
+    "folder": "Calculator",
+    "icon": "🧮",
+    "color": "cyan",
+    "tags": ["web", "math"],
+    "description": "Add, subtract, multiply, divide, powers, and square roots with a history panel."
+  },
+  {
+    "id": "rps",
+    "name": "Rock Paper Scissors",
+    "folder": "Rock paper scissor",
+    "icon": "✊",
+    "color": "violet",
+    "tags": ["web", "game"],
+    "description": "Play against the computer and track your score."
+  },
+  {
+    "id": "timer",
+    "name": "Countdown Timer",
+    "folder": "Timer",
+    "icon": "⏱️",
+    "color": "emerald",
+    "tags": ["web", "utility"],
+    "description": "Set seconds and watch the timer count down with an alert at zero."
+  },
+  {
+    "id": "word-counter",
+    "name": "Word Frequency Counter",
+    "folder": "Word frequency counter",
+    "icon": "📊",
+    "color": "amber",
+    "tags": ["web", "text"],
+    "description": "Paste text and see which words or letters appear most often."
+  },
+  {
+    "id": "tts",
+    "name": "Text to Speech",
+    "folder": "Text to speech app",
+    "icon": "🔊",
+    "color": "rose",
+    "tags": ["web", "audio"],
+    "description": "Type text and hear it spoken with adjustable speed and volume."
+  },
+  {
+    "id": "bg-remover",
+    "name": "BG Remover",
+    "folder": "BG remover",
+    "icon": "🖼️",
+    "color": "blue",
+    "tags": ["web", "image"],
+    "description": "Upload a photo and remove a solid-color background in the browser."
+  }
+]
