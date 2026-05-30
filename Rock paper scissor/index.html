@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Play Rock Paper Scissors against the computer — an interactive web game by Ashish Sharma." />
+  <title>Rock Paper Scissors | Python Projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #08091a;
+      --surface: rgba(14, 18, 40, 0.7);
+      --border: rgba(139, 92, 246, 0.12);
+      --border-hover: rgba(139, 92, 246, 0.3);
+      --text: #eaf0ff;
+      --text-dim: rgba(180, 195, 230, 0.6);
+      --violet: #8b5cf6;
+      --violet-glow: rgba(139, 92, 246, 0.2);
+      --cyan: #38bdf8;
+      --emerald: #34d399;
+      --rose: #f472b6;
+      --amber: #fbbf24;
+      --radius: 18px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* Background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(139, 92, 246, 0.1), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(56, 189, 248, 0.06), transparent 50%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* Back link */
+    .back-link {
+      position: fixed; top: 20px; left: 24px;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--text-dim);
+      text-decoration: none;
+      background: rgba(14, 18, 40, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-link:hover {
+      color: var(--violet);
+      border-color: var(--border-hover);
+      background: rgba(139, 92, 246, 0.08);
+    }
+
+    /* Main container */
+    .game-container {
+      position: relative; z-index: 1;
+      width: min(520px, calc(100% - 40px));
+      margin: 80px auto 40px;
+      text-align: center;
+    }
+
+    .game-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .game-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      margin-bottom: 36px;
+    }
+
+    /* Scoreboard */
+    .scoreboard {
+      display: flex; justify-content: center; gap: 24px;
+      margin-bottom: 36px;
+    }
+
+    .score-card {
+      flex: 1; max-width: 150px;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+    }
+
+    .score-card.player { border-color: rgba(56, 189, 248, 0.2); }
+    .score-card.computer { border-color: rgba(244, 114, 182, 0.2); }
+
+    .score-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .score-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-card.player .score-value { color: var(--cyan); }
+    .score-card.computer .score-value { color: var(--rose); }
+
+    .score-card.tie .score-value { color: var(--amber); }
+
+    /* Battle arena */
+    .arena {
+      display: flex; align-items: center; justify-content: center; gap: 20px;
+      margin-bottom: 36px;
+      min-height: 140px;
+    }
+
+    .arena-hand {
+      width: 110px; height: 110px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      backdrop-filter: blur(12px);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .arena-hand.player-hand { border-color: rgba(56, 189, 248, 0.2); }
+    .arena-hand.computer-hand { border-color: rgba(244, 114, 182, 0.2); }
+
+    .arena-hand.shake {
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateY(0); }
+      25% { transform: translateY(-15px); }
+      50% { transform: translateY(5px); }
+      75% { transform: translateY(-8px); }
+    }
+
+    .arena-hand.win {
+      border-color: var(--emerald);
+      box-shadow: 0 0 30px rgba(52, 211, 153, 0.2);
+      transform: scale(1.08);
+    }
+
+    .arena-hand.lose {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+
+    .arena-vs {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* Result message */
+    .result-message {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 32px;
+      min-height: 2em;
+      transition: all 0.3s ease;
+    }
+
+    .result-message.win { color: var(--emerald); }
+    .result-message.lose { color: var(--rose); }
+    .result-message.tie { color: var(--amber); }
+    .result-message.waiting { color: var(--text-dim); font-weight: 500; font-size: 1rem; }
+
+    /* Choice buttons */
+    .choices {
+      display: flex; justify-content: center; gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .choice-btn {
+      width: 100px; height: 100px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      font-size: 2.4rem;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .choice-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .choice-btn:hover {
+      transform: translateY(-6px) scale(1.05);
+      border-color: var(--violet);
+      box-shadow: 0 12px 30px rgba(139, 92, 246, 0.2);
+    }
+
+    .choice-btn:hover::after { opacity: 1; }
+
+    .choice-btn:active { transform: translateY(-2px) scale(0.98); }
+
+    .choice-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .choice-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    /* Controls */
+    .controls {
+      display: flex; justify-content: center; gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .ctrl-btn {
+      padding: 10px 24px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--text-dim);
+      background: rgba(100, 120, 200, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .ctrl-btn:hover {
+      color: var(--text);
+      background: rgba(100, 120, 200, 0.12);
+      border-color: var(--border-hover);
+    }
+
+    /* History */
+    .history-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      backdrop-filter: blur(12px);
+    }
+
+    .history-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+    }
+
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .history-list::-webkit-scrollbar { width: 4px; }
+    .history-list::-webkit-scrollbar-track { background: transparent; }
+    .history-list::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.2); border-radius: 2px; }
+
+    .history-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(100, 120, 200, 0.04);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      animation: slide-in 0.3s ease;
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .history-round {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    .history-moves {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .history-result {
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+
+    .history-result.win { color: var(--emerald); }
+    .history-result.lose { color: var(--rose); }
+    .history-result.tie { color: var(--amber); }
+
+    .history-empty {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      padding: 20px;
+    }
+
+    /* Footer */
+    .page-footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    .page-footer a { color: var(--violet); text-decoration: none; }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .game-title { font-size: 1.6rem; }
+      .arena-hand { width: 80px; height: 80px; font-size: 2.5rem; }
+      .choice-btn { width: 80px; height: 80px; font-size: 2rem; }
+      .scoreboard { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← Back to Hub</a>
+
+  <div class="game-container">
+    <h1 class="game-title">Rock Paper Scissors</h1>
+    <p class="game-subtitle">Choose your weapon and battle the computer</p>
+
+    <!-- Scoreboard -->
+    <div class="scoreboard">
+      <div class="score-card player">
+        <div class="score-label">You</div>
+        <div class="score-value" id="player-score">0</div>
+      </div>
+      <div class="score-card tie">
+        <div class="score-label">Ties</div>
+        <div class="score-value" id="tie-score">0</div>
+      </div>
+      <div class="score-card computer">
+        <div class="score-label">CPU</div>
+        <div class="score-value" id="computer-score">0</div>
+      </div>
+    </div>
+
+    <!-- Battle Arena -->
+    <div class="arena">
+      <div class="arena-hand player-hand" id="player-hand">❔</div>
+      <div class="arena-vs">VS</div>
+      <div class="arena-hand computer-hand" id="computer-hand">❔</div>
+    </div>
+
+    <!-- Result -->
+    <div class="result-message waiting" id="result-message">Pick rock, paper, or scissors to start!</div>
+
+    <!-- Choice Buttons -->
+    <div class="choices">
+      <button class="choice-btn" id="btn-rock" onclick="play('rock')" title="Rock">
+        🪨
+        <span class="choice-label">Rock</span>
+      </button>
+      <button class="choice-btn" id="btn-paper" onclick="play('paper')" title="Paper">
+        📄
+        <span class="choice-label">Paper</span>
+      </button>
+      <button class="choice-btn" id="btn-scissors" onclick="play('scissors')" title="Scissors">
+        ✂️
+        <span class="choice-label">Scissors</span>
+      </button>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="ctrl-btn" onclick="resetScores()">Reset Scores</button>
+      <button class="ctrl-btn" onclick="clearHistory()">Clear History</button>
+    </div>
+
+    <!-- History -->
+    <div class="history-section">
+      <div class="history-title">Round History</div>
+      <div class="history-list" id="history-list">
+        <div class="history-empty" id="history-empty">No rounds played yet</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    Built by <a href="https://github.com/ashishsrs01" target="_blank">Ashish Sharma</a>
+  </footer>
+
+  <script>
+    // Game state
+    let playerScore = 0;
+    let computerScore = 0;
+    let tieScore = 0;
+    let roundNumber = 0;
+    let isPlaying = false;
+
+    const emojis = { rock: '🪨', paper: '📄', scissors: '✂️' };
+
+    const playerHand = document.getElementById('player-hand');
+    const computerHand = document.getElementById('computer-hand');
+    const resultMessage = document.getElementById('result-message');
+    const historyList = document.getElementById('history-list');
+    const historyEmpty = document.getElementById('history-empty');
+    const buttons = document.querySelectorAll('.choice-btn');
+
+    function getComputerChoice() {
+      const choices = ['rock', 'paper', 'scissors'];
+      return choices[Math.floor(Math.random() * 3)];
+    }
+
+    function getWinner(userChoice, computerChoice) {
+      if (userChoice === computerChoice) return 'tie';
+      if (
+        (userChoice === 'rock' && computerChoice === 'scissors') ||
+        (userChoice === 'paper' && computerChoice === 'rock') ||
+        (userChoice === 'scissors' && computerChoice === 'paper')
+      ) return 'win';
+      return 'lose';
+    }
+
+    function play(userChoice) {
+      if (isPlaying) return;
+      isPlaying = true;
+
+      // Disable buttons during animation
+      buttons.forEach(b => b.disabled = true);
+
+      // Shake animation
+      playerHand.textContent = '✊';
+      computerHand.textContent = '✊';
+      playerHand.classList.add('shake');
+      computerHand.classList.add('shake');
+      playerHand.classList.remove('win', 'lose');
+      computerHand.classList.remove('win', 'lose');
+      resultMessage.textContent = '...';
+      resultMessage.className = 'result-message waiting';
+
+      setTimeout(() => {
+        playerHand.classList.remove('shake');
+        computerHand.classList.remove('shake');
+
+        const computerChoice = getComputerChoice();
+        const result = getWinner(userChoice, computerChoice);
+
+        playerHand.textContent = emojis[userChoice];
+        computerHand.textContent = emojis[computerChoice];
+
+        roundNumber++;
+
+        if (result === 'win') {
+          playerScore++;
+          resultMessage.textContent = '🎉 You Win!';
+          resultMessage.className = 'result-message win';
+          playerHand.classList.add('win');
+          computerHand.classList.add('lose');
+        } else if (result === 'lose') {
+          computerScore++;
+          resultMessage.textContent = '😢 Computer Wins!';
+          resultMessage.className = 'result-message lose';
+          computerHand.classList.add('win');
+          playerHand.classList.add('lose');
+        } else {
+          tieScore++;
+          resultMessage.textContent = '🤝 It\'s a Tie!';
+          resultMessage.className = 'result-message tie';
+        }
+
+        document.getElementById('player-score').textContent = playerScore;
+        document.getElementById('computer-score').textContent = computerScore;
+        document.getElementById('tie-score').textContent = tieScore;
+
+        addHistory(roundNumber, userChoice, computerChoice, result);
+
+        buttons.forEach(b => b.disabled = false);
+        isPlaying = false;
+      }, 600);
+    }
+
+    function addHistory(round, userChoice, computerChoice, result) {
+      historyEmpty.style.display = 'none';
+
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      item.innerHTML = `
+        <span class="history-round">#${round}</span>
+        <span class="history-moves">${emojis[userChoice]} vs ${emojis[computerChoice]}</span>
+        <span class="history-result ${result}">${result === 'win' ? 'Won' : result === 'lose' ? 'Lost' : 'Tie'}</span>
+      `;
+
+      historyList.insertBefore(item, historyList.firstChild.nextSibling);
+
+      // Keep last 20
+      const items = historyList.querySelectorAll('.history-item');
+      if (items.length > 20) {
+        historyList.removeChild(items[items.length - 1]);
+      }
+    }
+
+    function resetScores() {
+      playerScore = 0;
+      computerScore = 0;
+      tieScore = 0;
+      roundNumber = 0;
+      document.getElementById('player-score').textContent = '0';
+      document.getElementById('computer-score').textContent = '0';
+      document.getElementById('tie-score').textContent = '0';
+      playerHand.textContent = '❔';
+      computerHand.textContent = '❔';
+      playerHand.classList.remove('win', 'lose');
+      computerHand.classList.remove('win', 'lose');
+      resultMessage.textContent = 'Scores reset! Pick again.';
+      resultMessage.className = 'result-message waiting';
+      clearHistory();
+    }
+
+    function clearHistory() {
+      const items = historyList.querySelectorAll('.history-item');
+      items.forEach(i => i.remove());
+      historyEmpty.style.display = 'block';
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '1' || e.key.toLowerCase() === 'r') play('rock');
+      if (e.key === '2' || e.key.toLowerCase() === 'p') play('paper');
+      if (e.key === '3' || e.key.toLowerCase() === 's') play('scissors');
+    });
+  </script>
+</body>
+</html>

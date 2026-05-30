@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Text to Speech web app using the browser's Speech Synthesis API — by Ashish Sharma." />
+  <title>Text to Speech | Python Projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #100810;
+      --surface: rgba(28, 14, 28, 0.65);
+      --border: rgba(244, 114, 182, 0.1);
+      --border-hover: rgba(244, 114, 182, 0.3);
+      --text: #fce8f4;
+      --text-dim: rgba(220, 180, 210, 0.55);
+      --rose: #f472b6;
+      --rose-dark: #db2777;
+      --pink: #f9a8d4;
+      --violet: #a78bfa;
+      --cyan: #38bdf8;
+      --emerald: #34d399;
+      --radius: 18px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 10%, rgba(244, 114, 182, 0.07), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(167, 139, 250, 0.05), transparent 50%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .back-link {
+      position: fixed; top: 20px; left: 24px;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--text-dim);
+      text-decoration: none;
+      background: rgba(28, 14, 28, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-link:hover {
+      color: var(--rose);
+      border-color: var(--border-hover);
+    }
+
+    .app-container {
+      position: relative; z-index: 1;
+      width: min(560px, calc(100% - 40px));
+      margin: 80px auto 40px;
+      text-align: center;
+    }
+
+    .app-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, var(--rose), var(--violet));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .app-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      margin-bottom: 36px;
+    }
+
+    /* Speaker visualization */
+    .speaker-viz {
+      width: 80px; height: 80px;
+      margin: 0 auto 30px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .speaker-viz.speaking {
+      border-color: var(--rose);
+      box-shadow: 0 0 40px rgba(244, 114, 182, 0.25);
+      animation: speaker-pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes speaker-pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(244, 114, 182, 0.2); }
+      50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(244, 114, 182, 0.35); }
+    }
+
+    .speaker-viz .wave {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(244, 114, 182, 0.3);
+      animation: wave-expand 1.5s ease-out infinite;
+      opacity: 0;
+    }
+
+    .speaker-viz.speaking .wave { opacity: 1; }
+
+    .wave-1 { width: 110px; height: 110px; animation-delay: 0s; }
+    .wave-2 { width: 140px; height: 140px; animation-delay: 0.5s; }
+    .wave-3 { width: 170px; height: 170px; animation-delay: 1s; }
+
+    @keyframes wave-expand {
+      0% { transform: scale(0.8); opacity: 0.6; }
+      100% { transform: scale(1.2); opacity: 0; }
+    }
+
+    /* Text area */
+    .text-area {
+      width: 100%;
+      min-height: 140px;
+      padding: 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .text-area::placeholder { color: var(--text-dim); }
+
+    .text-area:focus {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.08);
+    }
+
+    /* Controls panel */
+    .controls-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      text-align: left;
+      backdrop-filter: blur(12px);
+    }
+
+    .control-row {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .control-row:last-child { margin-bottom: 0; }
+
+    .control-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      width: 70px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .control-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: rgba(244, 114, 182, 0.12);
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .control-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      background: var(--rose);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(244, 114, 182, 0.3);
+      transition: transform 0.2s;
+    }
+
+    .control-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .control-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--rose);
+      width: 45px;
+      text-align: right;
+    }
+
+    /* Voice select */
+    .voice-select {
+      flex: 1;
+      padding: 10px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text);
+      background: rgba(244, 114, 182, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+
+    .voice-select:focus { border-color: var(--rose); }
+    .voice-select option { background: var(--bg); color: var(--text); }
+
+    /* Action buttons */
+    .action-buttons {
+      display: flex; justify-content: center; gap: 14px;
+      margin-bottom: 30px;
+    }
+
+    .action-btn {
+      padding: 14px 36px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem; font-weight: 700;
+      border: none; border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .action-btn:active { transform: scale(0.96); }
+
+    .btn-speak {
+      background: linear-gradient(135deg, var(--rose-dark), var(--rose));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(244, 114, 182, 0.3);
+    }
+    .btn-speak:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(244, 114, 182, 0.4);
+    }
+    .btn-speak:disabled {
+      opacity: 0.5; cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-stop {
+      background: rgba(244, 114, 182, 0.1);
+      color: var(--rose);
+      border: 1px solid rgba(244, 114, 182, 0.2);
+    }
+    .btn-stop:hover { background: rgba(244, 114, 182, 0.18); }
+
+    /* Python note */
+    .python-note {
+      background: rgba(167, 139, 250, 0.06);
+      border: 1px solid rgba(167, 139, 250, 0.12);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    .python-note strong {
+      color: var(--violet);
+      font-weight: 700;
+    }
+
+    .python-note code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      background: rgba(167, 139, 250, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--violet);
+    }
+
+    /* Footer */
+    .page-footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+    .page-footer a { color: var(--rose); text-decoration: none; }
+
+    @media (max-width: 500px) {
+      .app-title { font-size: 1.6rem; }
+      .control-row { flex-wrap: wrap; }
+      .control-label { width: 100%; }
+      .action-buttons { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← Back to Hub</a>
+
+  <div class="app-container">
+    <h1 class="app-title">Text to Speech</h1>
+    <p class="app-subtitle">Type text and hear it spoken aloud</p>
+
+    <!-- Speaker visualization -->
+    <div class="speaker-viz" id="speaker-viz">
+      🔊
+      <div class="wave wave-1"></div>
+      <div class="wave wave-2"></div>
+      <div class="wave wave-3"></div>
+    </div>
+
+    <!-- Text input -->
+    <textarea class="text-area" id="text-input" placeholder="Type or paste the text you want to hear...">Hello! Welcome to the Text to Speech app. This was built by Ashish Sharma as a Python project.</textarea>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="control-row">
+        <label class="control-label" for="rate-slider">Speed</label>
+        <input type="range" class="control-slider" id="rate-slider" min="0.5" max="2" step="0.1" value="1" />
+        <span class="control-value" id="rate-value">1.0x</span>
+      </div>
+      <div class="control-row">
+        <label class="control-label" for="volume-slider">Volume</label>
+        <input type="range" class="control-slider" id="volume-slider" min="0" max="1" step="0.1" value="1" />
+        <span class="control-value" id="volume-value">100%</span>
+      </div>
+      <div class="control-row">
+        <label class="control-label" for="pitch-slider">Pitch</label>
+        <input type="range" class="control-slider" id="pitch-slider" min="0.5" max="2" step="0.1" value="1" />
+        <span class="control-value" id="pitch-value">1.0</span>
+      </div>
+      <div class="control-row">
+        <label class="control-label" for="voice-select">Voice</label>
+        <select class="voice-select" id="voice-select">
+          <option>Loading voices...</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="action-buttons">
+      <button class="action-btn btn-speak" id="btn-speak" onclick="speakText()">🔊 Speak</button>
+      <button class="action-btn btn-stop" id="btn-stop" onclick="stopSpeaking()">⏹ Stop</button>
+    </div>
+
+    <!-- Python note -->
+    <div class="python-note">
+      <strong>📝 Note:</strong> This web version uses the browser's <code>SpeechSynthesis API</code>. The original Python version (<code>t-t-s.py</code>) uses the <code>pyttsx3</code> library which works completely offline.
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    Built by <a href="https://github.com/ashishsrs01" target="_blank">Ashish Sharma</a>
+  </footer>
+
+  <script>
+    const synth = window.speechSynthesis;
+    const textInput = document.getElementById('text-input');
+    const rateSlider = document.getElementById('rate-slider');
+    const volumeSlider = document.getElementById('volume-slider');
+    const pitchSlider = document.getElementById('pitch-slider');
+    const rateValue = document.getElementById('rate-value');
+    const volumeValue = document.getElementById('volume-value');
+    const pitchValue = document.getElementById('pitch-value');
+    const voiceSelect = document.getElementById('voice-select');
+    const speakerViz = document.getElementById('speaker-viz');
+    const btnSpeak = document.getElementById('btn-speak');
+
+    let voices = [];
+
+    // Load voices
+    function loadVoices() {
+      voices = synth.getVoices();
+      voiceSelect.innerHTML = '';
+
+      if (voices.length === 0) {
+        voiceSelect.innerHTML = '<option>No voices available</option>';
+        return;
+      }
+
+      voices.forEach((voice, i) => {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        if (voice.default) option.selected = true;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    // Chrome loads voices asynchronously
+    if (synth.onvoiceschanged !== undefined) {
+      synth.onvoiceschanged = loadVoices;
+    }
+    loadVoices();
+
+    // Slider updates
+    rateSlider.addEventListener('input', () => {
+      rateValue.textContent = parseFloat(rateSlider.value).toFixed(1) + 'x';
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      volumeValue.textContent = Math.round(volumeSlider.value * 100) + '%';
+    });
+
+    pitchSlider.addEventListener('input', () => {
+      pitchValue.textContent = parseFloat(pitchSlider.value).toFixed(1);
+    });
+
+    function speakText() {
+      const text = textInput.value.trim();
+      if (!text) {
+        textInput.focus();
+        return;
+      }
+
+      // Cancel any ongoing speech
+      synth.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = parseFloat(rateSlider.value);
+      utterance.volume = parseFloat(volumeSlider.value);
+      utterance.pitch = parseFloat(pitchSlider.value);
+
+      const selectedVoiceIndex = parseInt(voiceSelect.value);
+      if (!isNaN(selectedVoiceIndex) && voices[selectedVoiceIndex]) {
+        utterance.voice = voices[selectedVoiceIndex];
+      }
+
+      utterance.onstart = () => {
+        speakerViz.classList.add('speaking');
+        btnSpeak.disabled = true;
+        btnSpeak.textContent = '🔊 Speaking...';
+      };
+
+      utterance.onend = () => {
+        speakerViz.classList.remove('speaking');
+        btnSpeak.disabled = false;
+        btnSpeak.textContent = '🔊 Speak';
+      };
+
+      utterance.onerror = () => {
+        speakerViz.classList.remove('speaking');
+        btnSpeak.disabled = false;
+        btnSpeak.textContent = '🔊 Speak';
+      };
+
+      synth.speak(utterance);
+    }
+
+    function stopSpeaking() {
+      synth.cancel();
+      speakerViz.classList.remove('speaking');
+      btnSpeak.disabled = false;
+      btnSpeak.textContent = '🔊 Speak';
+    }
+  </script>
+</body>
+</html>

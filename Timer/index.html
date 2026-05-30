@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A beautiful countdown timer with circular progress ring — by Ashish Sharma." />
+  <title>Countdown Timer | Python Projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #06100e;
+      --surface: rgba(10, 28, 24, 0.7);
+      --border: rgba(52, 211, 153, 0.12);
+      --border-hover: rgba(52, 211, 153, 0.3);
+      --text: #e4f8f0;
+      --text-dim: rgba(160, 210, 190, 0.55);
+      --emerald: #34d399;
+      --emerald-dark: #059669;
+      --cyan: #38bdf8;
+      --rose: #f472b6;
+      --amber: #fbbf24;
+      --radius: 18px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 10%, rgba(52, 211, 153, 0.08), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(56, 189, 248, 0.05), transparent 50%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .back-link {
+      position: fixed; top: 20px; left: 24px;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--text-dim);
+      text-decoration: none;
+      background: rgba(10, 28, 24, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-link:hover {
+      color: var(--emerald);
+      border-color: var(--border-hover);
+    }
+
+    .timer-container {
+      position: relative; z-index: 1;
+      width: min(480px, calc(100% - 40px));
+      margin: 80px auto 40px;
+      text-align: center;
+    }
+
+    .timer-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, var(--emerald), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .timer-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      margin-bottom: 40px;
+    }
+
+    /* Ring */
+    .ring-container {
+      position: relative;
+      width: 280px; height: 280px;
+      margin: 0 auto 40px;
+    }
+
+    .ring-svg {
+      width: 100%; height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke: rgba(52, 211, 153, 0.08);
+      stroke-width: 6;
+    }
+
+    .ring-progress {
+      fill: none;
+      stroke: url(#ring-gradient);
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .ring-display {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .ring-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 3.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .ring-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      margin-top: 6px;
+    }
+
+    /* Alarm animation */
+    .ring-container.alarm .ring-time {
+      animation: alarm-pulse 0.5s ease-in-out infinite alternate;
+      color: var(--amber);
+    }
+
+    @keyframes alarm-pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    .ring-container.alarm .ring-progress {
+      stroke: var(--amber);
+    }
+
+    /* Input section */
+    .input-section {
+      display: flex; justify-content: center; gap: 16px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .input-group {
+      display: flex; flex-direction: column; gap: 6px;
+      align-items: center;
+    }
+
+    .input-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+    }
+
+    .time-input {
+      width: 90px;
+      padding: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .time-input:focus {
+      border-color: var(--emerald);
+      box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.1);
+    }
+
+    .time-input::-webkit-inner-spin-button,
+    .time-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    /* Quick presets */
+    .presets {
+      display: flex; justify-content: center; gap: 8px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      padding: 8px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--text-dim);
+      background: rgba(52, 211, 153, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .preset-btn:hover {
+      color: var(--emerald);
+      background: rgba(52, 211, 153, 0.12);
+      border-color: var(--border-hover);
+    }
+
+    /* Controls */
+    .controls {
+      display: flex; justify-content: center; gap: 14px;
+      margin-bottom: 30px;
+    }
+
+    .ctrl-btn {
+      padding: 14px 32px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .ctrl-btn:active { transform: scale(0.96); }
+
+    .btn-start {
+      background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(52, 211, 153, 0.3);
+    }
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(52, 211, 153, 0.4);
+    }
+
+    .btn-pause {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--amber);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    .btn-pause:hover { background: rgba(251, 191, 36, 0.2); }
+
+    .btn-reset {
+      background: rgba(244, 114, 182, 0.08);
+      color: var(--rose);
+      border: 1px solid rgba(244, 114, 182, 0.15);
+    }
+    .btn-reset:hover { background: rgba(244, 114, 182, 0.15); }
+
+    .btn-hidden { display: none; }
+
+    /* Footer */
+    .page-footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+    .page-footer a { color: var(--emerald); text-decoration: none; }
+
+    @media (max-width: 500px) {
+      .timer-title { font-size: 1.6rem; }
+      .ring-container { width: 220px; height: 220px; }
+      .ring-time { font-size: 2.6rem; }
+      .time-input { width: 75px; font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← Back to Hub</a>
+
+  <div class="timer-container">
+    <h1 class="timer-title">Countdown Timer</h1>
+    <p class="timer-subtitle">Set your time and watch it count down</p>
+
+    <!-- Ring -->
+    <div class="ring-container" id="ring-container">
+      <svg class="ring-svg" viewBox="0 0 280 280">
+        <defs>
+          <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#34d399" />
+            <stop offset="100%" style="stop-color:#38bdf8" />
+          </linearGradient>
+        </defs>
+        <circle class="ring-bg" cx="140" cy="140" r="126" />
+        <circle class="ring-progress" id="ring-progress" cx="140" cy="140" r="126"
+          stroke-dasharray="791.68" stroke-dashoffset="0" />
+      </svg>
+      <div class="ring-display">
+        <div class="ring-time" id="ring-time">00:00</div>
+        <div class="ring-label" id="ring-label">Ready</div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-section" id="input-section">
+      <div class="input-group">
+        <label class="input-label" for="input-min">Minutes</label>
+        <input type="number" class="time-input" id="input-min" value="0" min="0" max="99" />
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="input-sec">Seconds</label>
+        <input type="number" class="time-input" id="input-sec" value="30" min="0" max="59" />
+      </div>
+    </div>
+
+    <!-- Presets -->
+    <div class="presets" id="presets">
+      <button class="preset-btn" onclick="setPreset(0, 30)">0:30</button>
+      <button class="preset-btn" onclick="setPreset(1, 0)">1:00</button>
+      <button class="preset-btn" onclick="setPreset(2, 0)">2:00</button>
+      <button class="preset-btn" onclick="setPreset(5, 0)">5:00</button>
+      <button class="preset-btn" onclick="setPreset(10, 0)">10:00</button>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="ctrl-btn btn-start" id="btn-start" onclick="startTimer()">Start</button>
+      <button class="ctrl-btn btn-pause btn-hidden" id="btn-pause" onclick="pauseTimer()">Pause</button>
+      <button class="ctrl-btn btn-reset btn-hidden" id="btn-reset" onclick="resetTimer()">Reset</button>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    Built by <a href="https://github.com/ashishsrs01" target="_blank">Ashish Sharma</a>
+  </footer>
+
+  <script>
+    let totalSeconds = 0;
+    let remainingSeconds = 0;
+    let timerInterval = null;
+    let isPaused = false;
+
+    const ringProgress = document.getElementById('ring-progress');
+    const ringTime = document.getElementById('ring-time');
+    const ringLabel = document.getElementById('ring-label');
+    const ringContainer = document.getElementById('ring-container');
+    const inputSection = document.getElementById('input-section');
+    const presetsEl = document.getElementById('presets');
+    const btnStart = document.getElementById('btn-start');
+    const btnPause = document.getElementById('btn-pause');
+    const btnReset = document.getElementById('btn-reset');
+    const inputMin = document.getElementById('input-min');
+    const inputSec = document.getElementById('input-sec');
+
+    const CIRCUMFERENCE = 2 * Math.PI * 126; // ~791.68
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateRing() {
+      const fraction = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
+      const offset = CIRCUMFERENCE * (1 - fraction);
+      ringProgress.style.strokeDashoffset = offset;
+      ringTime.textContent = formatTime(remainingSeconds);
+    }
+
+    function setPreset(min, sec) {
+      inputMin.value = min;
+      inputSec.value = sec;
+      remainingSeconds = min * 60 + sec;
+      totalSeconds = remainingSeconds;
+      updateRing();
+    }
+
+    function startTimer() {
+      if (isPaused) {
+        // Resume
+        isPaused = false;
+        btnPause.textContent = 'Pause';
+        timerInterval = setInterval(tick, 1000);
+        ringLabel.textContent = 'Running';
+        return;
+      }
+
+      const mins = parseInt(inputMin.value) || 0;
+      const secs = parseInt(inputSec.value) || 0;
+      totalSeconds = mins * 60 + secs;
+      remainingSeconds = totalSeconds;
+
+      if (totalSeconds <= 0) return;
+
+      ringContainer.classList.remove('alarm');
+      updateRing();
+      ringLabel.textContent = 'Running';
+
+      inputSection.style.display = 'none';
+      presetsEl.style.display = 'none';
+      btnStart.classList.add('btn-hidden');
+      btnPause.classList.remove('btn-hidden');
+      btnReset.classList.remove('btn-hidden');
+
+      timerInterval = setInterval(tick, 1000);
+    }
+
+    function tick() {
+      remainingSeconds--;
+      updateRing();
+
+      if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        ringLabel.textContent = "Time's Up! ⏰";
+        ringContainer.classList.add('alarm');
+        btnPause.classList.add('btn-hidden');
+      }
+    }
+
+    function pauseTimer() {
+      if (isPaused) {
+        startTimer();
+      } else {
+        isPaused = true;
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btnPause.textContent = 'Resume';
+        ringLabel.textContent = 'Paused';
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      isPaused = false;
+      remainingSeconds = 0;
+      totalSeconds = 0;
+
+      ringContainer.classList.remove('alarm');
+      ringProgress.style.strokeDashoffset = 0;
+      ringTime.textContent = '00:00';
+      ringLabel.textContent = 'Ready';
+
+      inputSection.style.display = 'flex';
+      presetsEl.style.display = 'flex';
+      btnStart.classList.remove('btn-hidden');
+      btnPause.classList.add('btn-hidden');
+      btnPause.textContent = 'Pause';
+      btnReset.classList.add('btn-hidden');
+    }
+
+    // Init display
+    updateRing();
+  </script>
+</body>
+</html>

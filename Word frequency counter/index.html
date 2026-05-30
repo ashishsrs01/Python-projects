@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Analyze word and letter frequencies in any text — by Ashish Sharma." />
+  <title>Word Frequency Counter | Python Projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0c0a08;
+      --surface: rgba(30, 24, 14, 0.65);
+      --border: rgba(251, 191, 36, 0.1);
+      --border-hover: rgba(251, 191, 36, 0.3);
+      --text: #faf5e8;
+      --text-dim: rgba(210, 195, 160, 0.55);
+      --amber: #fbbf24;
+      --amber-dark: #d97706;
+      --orange: #fb923c;
+      --cyan: #38bdf8;
+      --violet: #8b5cf6;
+      --emerald: #34d399;
+      --radius: 18px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 10%, rgba(251, 191, 36, 0.06), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(251, 146, 60, 0.04), transparent 50%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .back-link {
+      position: fixed; top: 20px; left: 24px;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--text-dim);
+      text-decoration: none;
+      background: rgba(30, 24, 14, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-link:hover {
+      color: var(--amber);
+      border-color: var(--border-hover);
+    }
+
+    .app-container {
+      position: relative; z-index: 1;
+      width: min(700px, calc(100% - 40px));
+      margin: 80px auto 40px;
+    }
+
+    .app-title {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, var(--amber), var(--orange));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .app-subtitle {
+      text-align: center;
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      margin-bottom: 36px;
+    }
+
+    /* Mode toggle */
+    .mode-toggle {
+      display: flex; justify-content: center; gap: 4px;
+      margin-bottom: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      width: fit-content;
+      margin-left: auto; margin-right: auto;
+    }
+
+    .mode-btn {
+      padding: 10px 24px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--text-dim);
+      background: transparent;
+      border: none; border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mode-btn.active {
+      color: var(--bg);
+      background: var(--amber);
+      box-shadow: 0 2px 12px rgba(251, 191, 36, 0.3);
+    }
+
+    /* Text input */
+    .text-area {
+      width: 100%;
+      min-height: 160px;
+      padding: 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .text-area::placeholder { color: var(--text-dim); }
+
+    .text-area:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.08);
+    }
+
+    /* Letter input */
+    .letter-input-row {
+      display: none;
+      align-items: center; gap: 12px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .letter-input-row.visible { display: flex; }
+
+    .letter-input-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    .letter-input {
+      width: 50px;
+      padding: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-align: center;
+      text-transform: lowercase;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .letter-input:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.08);
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--amber);
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* Chart */
+    .chart-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .chart-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      margin-bottom: 18px;
+    }
+
+    .chart-bars {
+      display: flex; flex-direction: column; gap: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .chart-bars::-webkit-scrollbar { width: 4px; }
+    .chart-bars::-webkit-scrollbar-track { background: transparent; }
+    .chart-bars::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.2); border-radius: 2px; }
+
+    .chart-row {
+      display: flex; align-items: center; gap: 12px;
+      animation: fade-in 0.3s ease both;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateX(-8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .chart-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      width: 100px;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .chart-bar-wrapper {
+      flex: 1;
+      height: 28px;
+      background: rgba(251, 191, 36, 0.04);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .chart-bar {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--amber-dark), var(--amber));
+      transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      min-width: 4px;
+      display: flex; align-items: center;
+      padding-left: 8px;
+    }
+
+    .chart-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: rgba(12, 10, 8, 0.8);
+      white-space: nowrap;
+    }
+
+    .chart-empty {
+      text-align: center;
+      color: var(--text-dim);
+      padding: 30px;
+      font-size: 0.9rem;
+    }
+
+    /* Footer */
+    .page-footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+    .page-footer a { color: var(--amber); text-decoration: none; }
+
+    @media (max-width: 500px) {
+      .app-title { font-size: 1.6rem; }
+      .chart-label { width: 70px; font-size: 0.72rem; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="back-link">← Back to Hub</a>
+
+  <div class="app-container">
+    <h1 class="app-title">Word Frequency Counter</h1>
+    <p class="app-subtitle">Paste text and analyze word or letter frequencies</p>
+
+    <!-- Mode toggle -->
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-word" onclick="setMode('word')">Words</button>
+      <button class="mode-btn" id="mode-letter" onclick="setMode('letter')">Letters</button>
+    </div>
+
+    <!-- Letter input -->
+    <div class="letter-input-row" id="letter-input-row">
+      <span class="letter-input-label">Count specific letter:</span>
+      <input type="text" class="letter-input" id="letter-input" maxlength="1" placeholder="a" />
+    </div>
+
+    <!-- Text area -->
+    <textarea class="text-area" id="text-input" placeholder="Paste or type your text here..."></textarea>
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-label">Total Words</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-unique">0</div>
+        <div class="stat-label">Unique</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-most">—</div>
+        <div class="stat-label">Most Common</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-chars">0</div>
+        <div class="stat-label">Characters</div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-section">
+      <div class="chart-title" id="chart-title">Frequency Chart</div>
+      <div class="chart-bars" id="chart-bars">
+        <div class="chart-empty">Enter some text to see the frequency analysis</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    Built by <a href="https://github.com/ashishsrs01" target="_blank">Ashish Sharma</a>
+  </footer>
+
+  <script>
+    let currentMode = 'word';
+
+    const textInput = document.getElementById('text-input');
+    const letterInputRow = document.getElementById('letter-input-row');
+    const letterInput = document.getElementById('letter-input');
+    const chartBars = document.getElementById('chart-bars');
+    const chartTitle = document.getElementById('chart-title');
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('mode-word').classList.toggle('active', mode === 'word');
+      document.getElementById('mode-letter').classList.toggle('active', mode === 'letter');
+      letterInputRow.classList.toggle('visible', mode === 'letter');
+      analyze();
+    }
+
+    function wordCounter(text) {
+      const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+      const freq = {};
+      words.forEach(w => {
+        const lower = w.toLowerCase().replace(/[^a-zA-Z0-9'-]/g, '');
+        if (lower) freq[lower] = (freq[lower] || 0) + 1;
+      });
+      return freq;
+    }
+
+    function letterCounter(text) {
+      const freq = {};
+      for (const ch of text.toLowerCase()) {
+        if (/[a-z]/.test(ch)) {
+          freq[ch] = (freq[ch] || 0) + 1;
+        }
+      }
+      return freq;
+    }
+
+    function analyze() {
+      const text = textInput.value;
+
+      if (!text.trim()) {
+        document.getElementById('stat-total').textContent = '0';
+        document.getElementById('stat-unique').textContent = '0';
+        document.getElementById('stat-most').textContent = '—';
+        document.getElementById('stat-chars').textContent = '0';
+        chartBars.innerHTML = '<div class="chart-empty">Enter some text to see the frequency analysis</div>';
+        return;
+      }
+
+      const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+      document.getElementById('stat-chars').textContent = text.length;
+
+      if (currentMode === 'word') {
+        const freq = wordCounter(text);
+        const entries = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+        const total = words.length;
+        const unique = entries.length;
+        const most = entries.length > 0 ? entries[0][0] : '—';
+
+        document.getElementById('stat-total').textContent = total;
+        document.getElementById('stat-unique').textContent = unique;
+        document.getElementById('stat-most').textContent = most.length > 8 ? most.slice(0, 8) + '…' : most;
+
+        chartTitle.textContent = `Top Words (${unique} unique)`;
+        renderChart(entries.slice(0, 25));
+      } else {
+        const specificLetter = letterInput.value.trim().toLowerCase();
+        const freq = letterCounter(text);
+
+        if (specificLetter && /^[a-z]$/.test(specificLetter)) {
+          const count = freq[specificLetter] || 0;
+          document.getElementById('stat-total').textContent = words.length;
+          document.getElementById('stat-unique').textContent = Object.keys(freq).length;
+          document.getElementById('stat-most').textContent = `"${specificLetter}"=${count}`;
+
+          chartTitle.textContent = `Letter "${specificLetter}" appears ${count} time${count !== 1 ? 's' : ''}`;
+          // Still show all letters chart, highlighting the selected one
+          const entries = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+          renderChart(entries, specificLetter);
+        } else {
+          const entries = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+          document.getElementById('stat-total').textContent = words.length;
+          document.getElementById('stat-unique').textContent = entries.length;
+          document.getElementById('stat-most').textContent = entries.length > 0 ? `"${entries[0][0]}"` : '—';
+          chartTitle.textContent = `Letter Frequencies (${entries.length} unique)`;
+          renderChart(entries);
+        }
+      }
+    }
+
+    function renderChart(entries, highlight = null) {
+      if (entries.length === 0) {
+        chartBars.innerHTML = '<div class="chart-empty">No data to display</div>';
+        return;
+      }
+
+      const maxCount = entries[0][1];
+      chartBars.innerHTML = entries.map(([label, count], i) => {
+        const pct = (count / maxCount) * 100;
+        const isHighlight = highlight && label === highlight;
+        const barColor = isHighlight
+          ? 'background: linear-gradient(90deg, #f97316, #fbbf24);'
+          : '';
+        const delay = `animation-delay: ${i * 0.03}s;`;
+        return `
+          <div class="chart-row" style="${delay}">
+            <div class="chart-label" title="${label}">${label}</div>
+            <div class="chart-bar-wrapper">
+              <div class="chart-bar" style="width: ${Math.max(pct, 3)}%; ${barColor}">
+                <span class="chart-count">${count}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Live analysis
+    textInput.addEventListener('input', analyze);
+    letterInput.addEventListener('input', analyze);
+
+    // Init
+    analyze();
+  </script>
+</body>
+</html>
