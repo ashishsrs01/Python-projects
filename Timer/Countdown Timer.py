@@ -1,6 +1,23 @@
 import time
 import sys
 
+try:
+    import winsound
+except ImportError:
+    winsound = None
+
+
+def play_alarm_sound():
+    if winsound:
+        # Simple Windows beep alarm
+        frequency = 1000  # Hz
+        duration = 700   # milliseconds
+        winsound.Beep(frequency, duration)
+    else:
+        # Fallback to terminal bell if winsound is unavailable
+        sys.stdout.write('\a')
+        sys.stdout.flush()
+
 
 def countdown_timer():
     print("\n" + "="*50)
@@ -34,6 +51,7 @@ def countdown_timer():
         remaining_seconds -= 1
     
     print("\r\033[1;32m00:00 ✓ Time's up! ⏰\033[0m\n")
+    play_alarm_sound()
     print("\033[1;33m🔔 Beep! Beep! Beep! 🔔\033[0m\n")
     
     while True:
