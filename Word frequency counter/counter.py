@@ -1,3 +1,24 @@
+def word_counter(text):
+    word_count = {}
+    for word in text.split():
+        word = word.lower()
+        if word in word_count:
+            word_count[word] += 1
+        else:
+            word_count[word] = 1
+    return word_count
+
+
+def alphabetical_counter(text, letter=None):
+    if letter is None:
+        letter = input("Enter a letter to count: ").lower()
+    count = 0
+    for char in text:
+        if char.lower() == letter:
+            count += 1
+    return count
+
+
 def counter():
     print("Welcome to the Word Frequency Counter!")
     text = input("Please enter a string of text: ")
@@ -12,27 +33,6 @@ def counter():
         print(f"The letter appears {result} times in the text.")
     else:
         print("Invalid input. Please enter 'W' for word count or 'L' for letter count.")
-
-
-    def word_counter(text):
-        word_count = {}
-
-        for word in text.split():
-            word = word.lower()
-            if word in word_count:
-                word_count[word] +=1
-            else:
-                word_count[word] = 1
-
-        return word_count
-
-    def alphabetical_counter(text):
-        count = 0
-        letter = input("Enter a letter to count: ").lower()
-        for char in text:
-            if char.lower() == letter:
-                count +=1
-        return count
 
 
 if __name__ == "__main__":

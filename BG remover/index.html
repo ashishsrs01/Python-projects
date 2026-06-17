@@ -5,142 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BG Remover | Python Projects</title>
   <link rel="stylesheet" href="../shared/app.css" />
+  <link rel="stylesheet" href="../shared/app-theme.css" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      min-height: 100vh;
-      padding: 70px 16px 32px;
-      font-family: "Segoe UI", system-ui, sans-serif;
-      background: linear-gradient(160deg, #0f172a, #1e1b4b);
-      color: #f1f5f9;
-    }
-
-    .box {
-      max-width: 520px;
-      margin: 0 auto;
-      padding: 28px;
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(15, 23, 42, 0.85);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    h1 { text-align: center; margin-bottom: 8px; }
-    .sub { text-align: center; color: rgba(226, 232, 240, 0.7); margin-bottom: 20px; font-size: 0.95rem; }
-
     .drop {
-      border: 2px dashed rgba(96, 165, 250, 0.5);
+      border: 2px dashed var(--border);
       border-radius: 14px;
-      padding: 32px 16px;
+      padding: 36px 16px;
       text-align: center;
       cursor: pointer;
-      background: rgba(59, 130, 246, 0.08);
+      background: var(--accent-glow);
+      transition: border-color 0.25s, background 0.25s, transform 0.2s;
     }
 
-    .drop.drag { border-color: #93c5fd; background: rgba(59, 130, 246, 0.15); }
+    .drop:hover { transform: translateY(-2px); }
+    .drop.drag {
+      border-color: var(--accent);
+      background: rgba(96, 165, 250, 0.15);
+    }
 
     input[type="file"] { display: none; }
 
-    label.btn {
-      display: inline-block;
-      margin-top: 14px;
-      padding: 10px 20px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #3b82f6, #6366f1);
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
+    .slider-row { margin-top: 20px; display: none; }
+    .slider-row.show { display: block; animation: fade-up 0.4s ease both; }
+
+    .slider-row label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 8px;
     }
 
-    .slider-row {
-      margin-top: 18px;
-      display: none;
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
     }
 
-    .slider-row.show { display: block; }
-
-    .slider-row label { font-size: 0.9rem; color: rgba(226, 232, 240, 0.8); }
-
-    input[type="range"] { width: 100%; margin-top: 8px; }
-
-    .preview {
-      margin-top: 18px;
-      display: none;
-      text-align: center;
-    }
-
-    .preview.show { display: block; }
+    .preview { margin-top: 20px; display: none; text-align: center; }
+    .preview.show { display: block; animation: fade-up 0.4s ease both; }
 
     .preview img {
       max-width: 100%;
       border-radius: 12px;
+      border: 1px solid var(--border);
       background: repeating-conic-gradient(#334155 0% 25%, #1e293b 0% 50%) 50% / 20px 20px;
     }
 
     .actions {
-      margin-top: 14px;
+      margin-top: 16px;
       display: flex;
       gap: 10px;
       justify-content: center;
       flex-wrap: wrap;
     }
-
-    .actions button {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .download { background: #22c55e; color: #fff; }
-    .reset { background: rgba(255, 255, 255, 0.1); color: #fff; }
-
-    .note {
-      margin-top: 16px;
-      font-size: 0.82rem;
-      color: rgba(226, 232, 240, 0.55);
-      line-height: 1.5;
-    }
   </style>
 </head>
-<body>
+<body class="app-page" data-accent="blue">
+  <div class="bg-glow"></div>
   <a class="back-link" href="../index.html">← Back to Hub</a>
 
-  <div class="box">
-    <h1>🖼️ BG Remover</h1>
-    <p class="sub">Remove a solid-color background in your browser (works on GitHub Pages).</p>
+  <div class="app-shell">
+    <header class="app-header">
+      <h1 class="app-title">BG Remover</h1>
+      <p class="app-subtitle">Remove a solid-color background in your browser</p>
+    </header>
 
-    <div class="drop" id="dropZone">
-      <p>Drag an image here or click to choose</p>
-      <label class="btn" for="fileInput">Choose image</label>
-      <input type="file" id="fileInput" accept="image/*" />
-    </div>
-
-    <div class="slider-row" id="sliderRow">
-      <label for="tolerance">How similar to the background color (higher = more removed)</label>
-      <input type="range" id="tolerance" min="5" max="120" value="40" />
-    </div>
-
-    <div class="preview" id="preview">
-      <img id="outputImg" alt="Result with transparent background" />
-      <div class="actions">
-        <button class="download" id="downloadBtn" type="button">Download PNG</button>
-        <button class="reset" id="resetBtn" type="button">Try another</button>
+    <div class="panel">
+      <div class="drop" id="dropZone">
+        <p>Drag an image here or click to choose</p>
+        <button class="btn-primary" type="button" id="chooseBtn">Choose image</button>
+        <input type="file" id="fileInput" accept="image/*" />
       </div>
-    </div>
 
-    <p class="note">
-      This web demo uses canvas pixels (good for plain backgrounds).
-      The Python version in <code>python-background-remover.py</code> uses AI (rembg) for harder photos — run that locally with Flask.
-    </p>
+      <div class="slider-row" id="sliderRow">
+        <label for="tolerance">How similar to the background color (higher = more removed)</label>
+        <input type="range" id="tolerance" min="5" max="120" value="40" />
+      </div>
+
+      <div class="preview" id="preview">
+        <img id="outputImg" alt="Result with transparent background" />
+        <div class="actions">
+          <button class="btn-primary" id="downloadBtn" type="button">Download PNG</button>
+          <button class="btn-secondary" id="resetBtn" type="button">Try another</button>
+        </div>
+      </div>
+
+      <p class="note-box">
+        This web demo uses canvas pixels (good for plain backgrounds).
+        The Python version in <code>python-background-remover.py</code> uses AI (rembg) for harder photos — run that locally.
+      </p>
+    </div>
   </div>
+
+  <footer class="page-footer">
+    Built by <a href="https://github.com/ashishsrs01" target="_blank" rel="noopener">Ashish Sharma</a>
+  </footer>
 
   <canvas id="canvas" hidden></canvas>
 
   <script>
     const dropZone = document.getElementById("dropZone");
+    const chooseBtn = document.getElementById("chooseBtn");
     const fileInput = document.getElementById("fileInput");
     const sliderRow = document.getElementById("sliderRow");
     const toleranceInput = document.getElementById("tolerance");
@@ -152,6 +116,7 @@
     const ctx = canvas.getContext("2d");
 
     let pngUrl = "";
+    let loadedImage = null;
 
     function colorDistance(r1, g1, b1, r2, g2, b2) {
       return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2);
@@ -165,16 +130,13 @@
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const pixels = data.data;
 
-      // Sample top-left corner as background color (simple student approach)
       const bgR = pixels[0];
       const bgG = pixels[1];
       const bgB = pixels[2];
 
       for (let i = 0; i < pixels.length; i += 4) {
         const dist = colorDistance(pixels[i], pixels[i + 1], pixels[i + 2], bgR, bgG, bgB);
-        if (dist < tolerance) {
-          pixels[i + 3] = 0; // make transparent
-        }
+        if (dist < tolerance) pixels[i + 3] = 0;
       }
 
       ctx.putImageData(data, 0, 0);
@@ -182,15 +144,20 @@
     }
 
     function showResult(dataUrl) {
-      if (pngUrl) URL.revokeObjectURL(pngUrl);
+      if (pngUrl && pngUrl.startsWith("blob:")) URL.revokeObjectURL(pngUrl);
       outputImg.src = dataUrl;
       pngUrl = dataUrl;
       preview.classList.add("show");
       sliderRow.classList.add("show");
     }
 
+    function processImage(img) {
+      loadedImage = img;
+      showResult(removeBackground(img, Number(toleranceInput.value)));
+    }
+
     function processFile(file) {
-      if (!file.type.startsWith("image/")) {
+      if (!file || !file.type.startsWith("image/")) {
         alert("Please choose an image file.");
         return;
       }
@@ -198,14 +165,16 @@
       const reader = new FileReader();
       reader.onload = function (e) {
         const img = new Image();
-        img.onload = function () {
-          const tol = Number(toleranceInput.value);
-          showResult(removeBackground(img, tol));
-        };
+        img.onload = function () { processImage(img); };
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
+
+    chooseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
 
     dropZone.addEventListener("click", () => fileInput.click());
 
@@ -227,7 +196,7 @@
     });
 
     toleranceInput.addEventListener("input", () => {
-      if (fileInput.files[0]) processFile(fileInput.files[0]);
+      if (loadedImage) showResult(removeBackground(loadedImage, Number(toleranceInput.value)));
     });
 
     downloadBtn.addEventListener("click", () => {
@@ -239,6 +208,7 @@
 
     resetBtn.addEventListener("click", () => {
       fileInput.value = "";
+      loadedImage = null;
       preview.classList.remove("show");
       sliderRow.classList.remove("show");
     });
