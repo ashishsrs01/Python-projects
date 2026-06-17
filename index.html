@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Python projects by Ashish Sharma — try every app in your browser." />
+  <title>Python Projects | Ashish Sharma</title>
+  <link rel="stylesheet" href="shared/hub.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <div class="wrap">
+    <header class="top-bar">
+      <a href="#" class="brand">
+        <span class="brand-icon">AS</span>
+        <span>Ashish Sharma</span>
+      </a>
+      <a class="github-btn" href="https://github.com/ashishsrs01/Python-projects" target="_blank" rel="noopener">
+        View on GitHub
+      </a>
+    </header>
+
+    <section class="hero">
+      <div class="badge">1st year student • Python &amp; web demos</div>
+      <h1>Python <span>Projects</span></h1>
+      <p>
+        A growing collection of small apps. Each folder has a browser demo
+        (<code>index.html</code>) plus the original Python file.
+      </p>
+      <p style="margin-top:12px; font-size:0.9rem;">
+        <strong id="stat-projects">6</strong> projects ready to try
+      </p>
+    </section>
+
+    <div class="toolbar">
+      <label class="search-box" for="search-input">
+        <span aria-hidden="true">🔍</span>
+        <input id="search-input" type="search" placeholder="Search projects..." />
+      </label>
+      <span class="count-label" id="project-count"></span>
+    </div>
+
+    <section class="grid" id="project-grid">
+      <!-- Cards are added by shared/hub.js from apps.json -->
+      <div class="card-add" id="card-add">
+        <span style="font-size:1.6rem;">＋</span>
+        <strong>Add a new app</strong>
+        <p>Create a folder with <code>index.html</code>, then add one entry in <code>apps.json</code>.</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Built by <a href="https://github.com/ashishsrs01" target="_blank" rel="noopener">Ashish Sharma</a></p>
+      <p style="margin-top:8px;">See <code>ADD_APP.md</code> for how to add more projects.</p>
+    </footer>
+  </div>
+
+  <script src="shared/hub.js"></script>
+</body>
+</html>

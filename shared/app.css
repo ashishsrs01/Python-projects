@@ -1,0 +1,22 @@
+/* Small shared styles for each app page */
+.back-link {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 14, 28, 0.75);
+  color: rgba(230, 240, 255, 0.75);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  backdrop-filter: blur(8px);
+}
+
+.back-link:hover {
+  color: #fff;
+  border-color: rgba(59, 158, 255, 0.4);
+}
