@@ -18,6 +18,15 @@
     "description": "Play against the computer and track your score."
   },
   {
+    "id": "dice-roller",
+    "name": "Dice Roller",
+    "folder": "DIce roller",
+    "icon": "🎲",
+    "color": "violet",
+    "tags": ["web", "game"],
+    "description": "Roll any number of dice with custom sides and see the total."
+  },
+  {
     "id": "timer",
     "name": "Countdown Timer",
     "folder": "Timer",

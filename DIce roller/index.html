@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Roll any number of dice with custom sides — by Ashish Sharma." />
+  <title>Dice Roller | Python Projects</title>
+  <link rel="stylesheet" href="../shared/app.css" />
+  <link rel="stylesheet" href="../shared/app-theme.css" />
+  <style>
+    .dice-container { text-align: center; }
+
+    .controls-panel {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      animation: fade-up 0.55s ease 0.1s both;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .input-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .dice-input {
+      width: 88px;
+      padding: 12px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .dice-input::-webkit-inner-spin-button,
+    .dice-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      animation: fade-up 0.55s ease 0.14s both;
+    }
+
+    .roll-btn-wrap {
+      margin-bottom: 28px;
+      animation: fade-up 0.55s ease 0.18s both;
+    }
+
+    .total-display {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+      min-height: 1.5em;
+    }
+
+    .total-display strong {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-left: 6px;
+    }
+
+    .dice-arena {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      min-height: 100px;
+      margin-bottom: 28px;
+      animation: fade-up 0.55s ease 0.12s both;
+    }
+
+    .die {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .die.rolling {
+      animation: die-roll 0.45s ease;
+    }
+
+    @keyframes die-roll {
+      0% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(90deg) scale(1.08); }
+      50% { transform: rotate(180deg) scale(0.95); }
+      75% { transform: rotate(270deg) scale(1.05); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    .die.landed {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .placeholder-msg {
+      color: var(--muted);
+      font-size: 0.95rem;
+      padding: 24px;
+    }
+
+    .history-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      text-align: left;
+      animation: fade-up 0.55s ease 0.22s both;
+    }
+
+    .history-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      animation: slide-in 0.3s ease;
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(-8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .history-rolls { color: var(--text); font-weight: 500; }
+    .history-total { color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+    .history-empty {
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .history-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 500px) {
+      .die { width: 54px; height: 54px; font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body class="app-page" data-accent="violet">
+  <div class="bg-glow"></div>
+  <a class="back-link" href="../index.html">← Back to Hub</a>
+
+  <div class="app-shell">
+    <header class="app-header">
+      <h1 class="app-title">Dice Roller</h1>
+      <p class="app-subtitle">Choose how many dice to roll and how many sides each die has</p>
+    </header>
+
+    <div class="dice-container">
+      <div class="controls-panel panel">
+        <div class="input-group">
+          <label class="input-label" for="num-dice">Number of dice</label>
+          <input type="number" class="dice-input text-input" id="num-dice" value="2" min="1" max="20" />
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="sides">Sides per die</label>
+          <input type="number" class="dice-input text-input" id="sides" value="6" min="2" max="100" />
+        </div>
+      </div>
+
+      <div class="presets">
+        <button class="btn-secondary" type="button" onclick="setPreset(1, 6)">1d6</button>
+        <button class="btn-secondary" type="button" onclick="setPreset(2, 6)">2d6</button>
+        <button class="btn-secondary" type="button" onclick="setPreset(3, 6)">3d6</button>
+        <button class="btn-secondary" type="button" onclick="setPreset(1, 20)">1d20</button>
+        <button class="btn-secondary" type="button" onclick="setPreset(2, 20)">2d20</button>
+        <button class="btn-secondary" type="button" onclick="setPreset(1, 4)">1d4</button>
+        <button class="btn-secondary" type="button" onclick="setPreset(1, 12)">1d12</button>
+      </div>
+
+      <div class="roll-btn-wrap">
+        <button class="btn-primary" id="roll-btn" type="button" onclick="rollAll()">🎲 Roll Dice</button>
+      </div>
+
+      <div class="total-display" id="total-display">Roll the dice to see your total</div>
+
+      <div class="dice-arena" id="dice-arena">
+        <p class="placeholder-msg">Your dice will appear here</p>
+      </div>
+
+      <div class="history-section">
+        <div class="history-title">Roll History</div>
+        <div class="history-list" id="history-list">
+          <div class="history-empty" id="history-empty">No rolls yet</div>
+        </div>
+        <div class="history-actions">
+          <button class="btn-secondary" type="button" onclick="clearHistory()">Clear History</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    Built by <a href="https://github.com/ashishsrs01" target="_blank" rel="noopener">Ashish Sharma</a>
+  </footer>
+
+  <script>
+    // Same logic as roller.py — random.randint(1, sides) for each die
+    function rollDice(numDice, sides) {
+      const rolls = [];
+      for (let i = 0; i < numDice; i++) {
+        rolls.push(Math.floor(Math.random() * sides) + 1);
+      }
+      return rolls;
+    }
+
+    let isRolling = false;
+    let rollCount = 0;
+
+    const numDiceInput = document.getElementById("num-dice");
+    const sidesInput = document.getElementById("sides");
+    const diceArena = document.getElementById("dice-arena");
+    const totalDisplay = document.getElementById("total-display");
+    const rollBtn = document.getElementById("roll-btn");
+    const historyList = document.getElementById("history-list");
+    const historyEmpty = document.getElementById("history-empty");
+
+    function setPreset(numDice, sides) {
+      numDiceInput.value = numDice;
+      sidesInput.value = sides;
+    }
+
+    function getInputs() {
+      const numDice = Math.max(1, Math.min(20, parseInt(numDiceInput.value, 10) || 1));
+      const sides = Math.max(2, Math.min(100, parseInt(sidesInput.value, 10) || 6));
+      numDiceInput.value = numDice;
+      sidesInput.value = sides;
+      return { numDice, sides };
+    }
+
+    function rollAll() {
+      if (isRolling) return;
+
+      const { numDice, sides } = getInputs();
+      isRolling = true;
+      rollBtn.disabled = true;
+      rollBtn.textContent = "Rolling...";
+
+      diceArena.innerHTML = "";
+      const diceEls = [];
+
+      for (let i = 0; i < numDice; i++) {
+        const die = document.createElement("div");
+        die.className = "die rolling";
+        die.textContent = "?";
+        diceArena.appendChild(die);
+        diceEls.push(die);
+      }
+
+      totalDisplay.innerHTML = "Rolling...";
+
+      let ticks = 0;
+      const animInterval = setInterval(() => {
+        diceEls.forEach((die) => {
+          die.textContent = Math.floor(Math.random() * sides) + 1;
+        });
+        ticks++;
+        if (ticks >= 8) {
+          clearInterval(animInterval);
+          finishRoll(numDice, sides, diceEls);
+        }
+      }, 60);
+    }
+
+    function finishRoll(numDice, sides, diceEls) {
+      const results = rollDice(numDice, sides);
+      const total = results.reduce((sum, n) => sum + n, 0);
+
+      diceEls.forEach((die, i) => {
+        die.classList.remove("rolling");
+        die.classList.add("landed");
+        die.textContent = results[i];
+      });
+
+      totalDisplay.innerHTML = `Total:<strong>${total}</strong>`;
+      addHistory(numDice, sides, results, total);
+
+      isRolling = false;
+      rollBtn.disabled = false;
+      rollBtn.textContent = "🎲 Roll Dice";
+    }
+
+    function addHistory(numDice, sides, results, total) {
+      rollCount++;
+      historyEmpty.style.display = "none";
+
+      const item = document.createElement("div");
+      item.className = "history-item";
+      item.innerHTML = `
+        <span>#${rollCount} · ${numDice}d${sides}</span>
+        <span class="history-rolls">[${results.join(", ")}]</span>
+        <span class="history-total">= ${total}</span>
+      `;
+
+      historyList.insertBefore(item, historyList.firstChild.nextSibling);
+
+      const items = historyList.querySelectorAll(".history-item");
+      if (items.length > 15) {
+        historyList.removeChild(items[items.length - 1]);
+      }
+    }
+
+    function clearHistory() {
+      historyList.querySelectorAll(".history-item").forEach((el) => el.remove());
+      historyEmpty.style.display = "block";
+      rollCount = 0;
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        rollAll();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -58,6 +58,7 @@ function filterApps() {
 const fallbackApps = [
   { name: "Calculator", folder: "Calculator", icon: "🧮", color: "cyan", tags: ["web"], description: "Math with history." },
   { name: "Rock Paper Scissors", folder: "Rock paper scissor", icon: "✊", color: "violet", tags: ["game"], description: "Play vs the computer." },
+  { name: "Dice Roller", folder: "DIce roller", icon: "🎲", color: "violet", tags: ["game"], description: "Roll dice with custom sides and see the total." },
   { name: "Countdown Timer", folder: "Timer", icon: "⏱️", color: "emerald", tags: ["web"], description: "Count down from seconds you enter." },
   { name: "Word Frequency Counter", folder: "Word frequency counter", icon: "📊", color: "amber", tags: ["web"], description: "Count words and letters." },
   { name: "Text to Speech", folder: "Text to speech app", icon: "🔊", color: "rose", tags: ["web"], description: "Hear your text aloud." },
