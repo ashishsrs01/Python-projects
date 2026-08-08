@@ -61,5 +61,14 @@
     "color": "blue",
     "tags": ["web", "image"],
     "description": "Upload a photo and remove a solid-color background in the browser."
+  },
+  {
+    "id": "currency-converter",
+    "name": "Currency Converter",
+    "folder": "currency converter",
+    "icon": "💱",
+    "color": "emerald",
+    "tags": ["web", "finance"],
+    "description": "Convert currencies with live exchange rates from the browser."
   }
 ]

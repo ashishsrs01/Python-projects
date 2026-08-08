@@ -62,7 +62,8 @@ const fallbackApps = [
   { name: "Countdown Timer", folder: "Timer", icon: "⏱️", color: "emerald", tags: ["web"], description: "Count down from seconds you enter." },
   { name: "Word Frequency Counter", folder: "Word frequency counter", icon: "📊", color: "amber", tags: ["web"], description: "Count words and letters." },
   { name: "Text to Speech", folder: "Text to speech app", icon: "🔊", color: "rose", tags: ["web"], description: "Hear your text aloud." },
-  { name: "BG Remover", folder: "BG remover", icon: "🖼️", color: "blue", tags: ["web"], description: "Remove solid backgrounds in the browser." }
+  { name: "BG Remover", folder: "BG remover", icon: "🖼️", color: "blue", tags: ["web"], description: "Remove solid backgrounds in the browser." },
+  { name: "Currency Converter", folder: "currency converter", icon: "💱", color: "emerald", tags: ["finance"], description: "Convert currencies with live exchange rates." }
 ];
 
 async function loadApps() {
