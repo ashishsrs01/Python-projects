@@ -22,8 +22,9 @@ The main page [`index.html`](index.html) lists all apps. The list comes from [`a
 | **Dice Roller** | Roll multiple dice with custom sides; shows each roll and the total | [`DIce roller/roller.py`](DIce%20roller/roller.py) | [`DIce roller/index.html`](DIce%20roller/index.html) |
 | **Countdown Timer** | Enter seconds and count down to zero | [`Timer/Countdown Timer.py`](Timer/Countdown%20Timer.py) | [`Timer/index.html`](Timer/index.html) |
 | **Word Frequency Counter** | Count how often words or letters appear | [`Word frequency counter/counter.py`](Word%20frequency%20counter/counter.py) | [`Word frequency counter/index.html`](Word%20frequency%20counter/index.html) |
-| **Text to Speech** | Type text and hear it (browser uses Web Speech API) | [`Text to speech app/t-t-s.py`](Text%20to%20speech%20app/t-t-s.py) | [`Text to speech app/index.html`](Text%20to%20speech%20app/index.html) |
+| **Text to Speech** | Type text and hear it (browser uses Web Speech API) | [`Text to speech app/t-t-s.py`](Text%20to%20speech%20app/t-t-s.py) | [`Text to speech app/index.html`](Text%20to%20speech app/index.html) |
 | **BG Remover** | Remove a solid-color background (canvas in browser; AI version in Python) | [`BG remover/python-background-remover.py`](BG%20remover/python-background-remover.py) | [`BG remover/index.html`](BG%20remover/index.html) |
+| **Currency Converter** | Convert currencies with live browser demo and a Python CLI version | [`currency converter/cc.py`](currency%20converter/cc.py) | [`currency converter/index.html`](currency%20converter/index.html) |
 
 ---
 
@@ -52,6 +53,7 @@ python "Rock paper scissor/Rock-paper-scissor-game.py"
 python "DIce roller/roller.py"
 python "Word frequency counter/counter.py"
 python "Text to speech app/t-t-s.py"
+python "currency converter/cc.py"
 ```
 
 **BG Remover (AI, needs extra packages):**
@@ -80,6 +82,7 @@ Python-projects/
 ├── Timer/
 ├── Word frequency counter/
 ├── Text to speech app/
+├── currency converter/
 └── BG remover/
 ```
 
