@@ -1,6 +1,6 @@
 # Python Projects
 
-A curated collection of small Python programs (CLI and Tkinter) with matching browser demos so anyone can try the apps without installing anything. This repository is primarily a learning/portfolio collection — the Python code is the main content and the site is a lightweight GitHub Pages frontend.
+A curated collection of small Python programs (CLI and Tkinter) with matching browser demos so anyone can learn and try the apps without installing anything. This repository is primarily a learning/portfolio collection — the Python code is the main content and the site is a lightweight GitHub Pages frontend.
 
 Live demo: https://ashishsrs01.github.io/Python-projects/
 
@@ -28,6 +28,7 @@ Each project folder contains a Python source file and an `index.html` demo. See 
 | Text to Speech | `Text to speech app/t-t-s.py` | `Text to speech app/index.html` |
 | BG Remover | `BG remover/python-background-remover.py` | `BG remover/index.html` |
 | Currency Converter | `currency converter/cc.py` | `currency converter/index.html` |
+| Todo App | `Todo app/todo.py` | `Todo app/index.html` |
 
 For details and usage examples open the folder for any project.
 
@@ -104,7 +105,9 @@ This repository is provided for learning and personal use. If you'd like a forma
 
 ---
 
-## Contact
+## About the Author
 
-Built by Ashish Sharma — https://github.com/ashishsrs01
+Built by Ashish Sharma as part of a Python learning journey.
+
+The code is intentionally simple, practical, and easy to understand so it can be used for learning, practice, and portfolio building.
 
