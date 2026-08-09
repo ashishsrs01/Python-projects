@@ -15,23 +15,23 @@ def todo():
                 print(task.strip())
 
     def add_task():
-        print('Enter the task to add: ')
+        print('\nEnter the task to add: ')
         t = input()
         with open('Todo app/task.txt', 'a') as f:
             f.writelines(t + '\n')
-        print('Task added successfully!')
+        print('\nTask added successfully!')
 
     def delete_task():
-        print('Enter the task for deletion: ')
+        print('\nEnter the task for deletion: ')
         t = input()
         with open('Todo app/task.txt', 'r') as f:
             task = f.readlines()
 
             if t in task:
                 f.remove(t)
-                print('Task deleted successfully!')
+                print('\nTask deleted successfully!')
             else:
-                print('Task not existed')
+                print('\nTask not existed')
 
 
     while True:
@@ -52,7 +52,7 @@ def todo():
         elif n == 4:
             break
         else:
-            print('entered value not accepted')
+            print('\nentered value not accepted')
 
 todo()
 
