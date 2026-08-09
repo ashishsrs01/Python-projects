@@ -1,0 +1,14 @@
+# Mark frontend files used for GitHub Pages as vendored so GitHub Linguist
+# excludes them from language statistics. This does NOT change any files,
+# it only influences how GitHub computes repository language breakdown.
+
+# All HTML files
+*.html linguist-vendored
+
+# All CSS files
+*.css linguist-vendored
+
+# All JavaScript files
+*.js linguist-vendored
+
+# Note: Python files are intentionally left unmarked so they count as Python.
