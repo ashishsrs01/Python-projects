@@ -11,8 +11,8 @@ def todo():
 
     def view_task():
 
-        if tasks is []:
-            print('NO task exist')
+        if not tasks:
+            print('NO task exist yet!')
         else:
             print(tasks)
 
@@ -20,11 +20,17 @@ def todo():
         print('Enter the task to add: ')
         task = input()
         tasks.append(task)
+        print('Task added successfully!')
 
     def delete_task():
         print('Enter the task for deletion: ')
         task = input()
-        tasks.remove(task)
+        if task in tasks:
+            tasks.remove(task)
+            print('Taks deleted successfully')
+        else:
+            print('this task not existed')
+        
 
     while True:
 
@@ -34,6 +40,20 @@ def todo():
             n = int(input())
         except ValueError:
             print('Entered value not accepted')
+
+        if n == 1:
+            view_task()
+        elif n ==2: 
+            add_task()
+        elif n == 3:
+            delete_task()
+        elif n == 4:
+            break
+        else:
+            print('entered value not accepted')
+
+todo()
+
 
             
 
