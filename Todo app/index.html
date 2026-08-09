@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo App | Python Projects</title>
+  <link rel="stylesheet" href="../shared/app.css" />
+  <link rel="stylesheet" href="../shared/app-theme.css" />
+  <style>
+    body.app-page { display:flex; flex-direction:column; align-items:center }
+    .app-shell.narrow { max-width:760px }
+    .todo-shell { width:100%; max-width:720px; border-radius:12px; padding:18px; background:var(--card); border:1px solid var(--border) }
+    .todo-list { margin-top:12px }
+    .todo-item { display:flex; justify-content:space-between; gap:12px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.02); margin-bottom:8px }
+    .todo-item .text { color:var(--muted) }
+    .controls { display:flex; gap:8px; margin-top:12px }
+    .controls input { flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:inherit }
+    .controls button { padding:10px 14px; border-radius:10px; border:none; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-weight:700 }
+  </style>
+</head>
+<body class="app-page" data-accent="amber">
+  <div class="bg-glow"></div>
+  <a class="back-link" href="../index.html">← Back to Hub</a>
+
+  <div class="app-shell narrow">
+    <header class="app-header">
+      <h1 class="app-title">Todo App</h1>
+      <p class="app-subtitle">A simple task manager — add, view, and delete tasks</p>
+    </header>
+
+    <div class="todo-shell">
+      <div class="controls">
+        <input id="taskInput" placeholder="Enter a new task" aria-label="New task" />
+        <button id="addBtn">Add</button>
+      </div>
+
+      <div class="todo-list" id="todoList" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <footer class="page-footer">Built by <a href="https://github.com/ashishsrs01" target="_blank" rel="noopener">Ashish Sharma</a></footer>
+
+  <script>
+    const STORAGE_KEY = 'todo.tasks.v1';
+    const input = document.getElementById('taskInput');
+    const addBtn = document.getElementById('addBtn');
+    const listEl = document.getElementById('todoList');
+
+    function load() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (e) { return [] }
+    }
+
+    function save(tasks) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function render() {
+      const tasks = load();
+      if (!tasks.length) {
+        listEl.innerHTML = '<div class="text" style="color:var(--muted)">No tasks yet.</div>';
+        return;
+      }
+      listEl.innerHTML = tasks.map((t, i) => (
+        `<div class="todo-item"><div class="text">${escapeHtml(t)}</div><div><button data-i="${i}" class="del">Delete</button></div></div>`
+      )).join('');
+      document.querySelectorAll('.del').forEach(b => b.addEventListener('click', (e) => {
+        const idx = Number(e.currentTarget.dataset.i);
+        remove(idx);
+      }));
+    }
+
+    function add() {
+      const v = input.value.trim();
+      if (!v) return;
+      const tasks = load();
+      tasks.push(v);
+      save(tasks);
+      input.value = '';
+      render();
+    }
+
+    function remove(i) {
+      const tasks = load();
+      tasks.splice(i,1);
+      save(tasks);
+      render();
+    }
+
+    function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]) }
+
+    addBtn.addEventListener('click', add);
+    input.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') add(); });
+
+    render();
+  </script>
+</body>
+</html>

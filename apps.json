@@ -71,4 +71,14 @@
     "tags": ["web", "finance"],
     "description": "Convert currencies with live exchange rates from the browser."
   }
+  ,
+  {
+    "id": "todo",
+    "name": "Todo App",
+    "folder": "Todo app",
+    "icon": "📝",
+    "color": "amber",
+    "tags": ["web", "productivity"],
+    "description": "A simple Todo list with add/delete and persistent storage in the browser."
+  }
 ]
