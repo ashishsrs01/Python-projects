@@ -281,41 +281,7 @@
       </div>
 
       <div class="grid" id="projectGrid">
-        <a class="card project-card" href="calculator/index.html" data-name="Calculator" data-tags="math simple sci-fi">
-          <div>
-            <div class="tag">Web App</div>
-            <div class="title">Calculator</div>
-            <div class="text">A futuristic calculator with a clean UI, theme toggle, and smooth animations.</div>
-          </div>
-          <div class="link">Open project <span class="arrow">↗</span></div>
-        </a>
-
-        <a class="card project-card" href="Todo app/index.html" data-name="Todo App" data-tags="productivity tasks planner">
-          <div>
-            <div class="tag">Web App</div>
-            <div class="title">Todo App</div>
-            <div class="text">A task manager built for productivity, simplicity, and quick daily use.</div>
-          </div>
-          <div class="link">Open project <span class="arrow">↗</span></div>
-        </a>
-
-        <a class="card project-card" href="quiz-app/index.html" data-name="Quiz App" data-tags="quiz mcq learning test">
-          <div>
-            <div class="tag">Web App</div>
-            <div class="title">Quiz App</div>
-            <div class="text">An interactive quiz experience for practice, revision, or mini tests.</div>
-          </div>
-          <div class="link">Open project <span class="arrow">↗</span></div>
-        </a>
-
-        <a class="card project-card" href="weather-app/index.html" data-name="Weather App" data-tags="weather forecast climate">
-          <div>
-            <div class="tag">Web App</div>
-            <div class="title">Weather App</div>
-            <div class="text">A weather dashboard for live conditions, forecasts, and location-based updates.</div>
-          </div>
-          <div class="link">Open project <span class="arrow">↗</span></div>
-        </a>
+        <!-- Cards are populated dynamically from apps.json -->
       </div>
     </section>
 
@@ -323,28 +289,71 @@
   </main>
 
   <script>
-    const input = document.getElementById('filterInput');
-    const cards = [...document.querySelectorAll('.project-card')];
-    const count = document.getElementById('projectCount');
+    (function(){
+      const input = document.getElementById('filterInput');
+      const grid = document.getElementById('projectGrid');
+      const count = document.getElementById('projectCount');
 
-    function updateCount(visible) {
-      count.textContent = `${visible} project${visible === 1 ? '' : 's'} visible`;
-    }
+      function makeCard(app) {
+        const a = document.createElement('a');
+        a.className = 'card project-card';
+        a.href = `${app.folder}/index.html`;
+        a.dataset.name = app.name || '';
+        a.dataset.tags = (app.tags || []).join(' ');
 
-    function filterCards() {
-      const q = input.value.trim().toLowerCase();
-      let visible = 0;
-      cards.forEach(card => {
-        const text = `${card.dataset.name} ${card.dataset.tags}`.toLowerCase();
-        const show = text.includes(q);
-        card.style.display = show ? 'flex' : 'none';
-        if (show) visible += 1;
+        a.innerHTML = `
+          <div>
+            <div class="tag">Web App</div>
+            <div class="title">${app.name}</div>
+            <div class="text">${app.description || ''}</div>
+          </div>
+          <div class="link">Open project <span class="arrow">↗</span></div>
+        `;
+
+        return a;
+      }
+
+      function updateCount(visible, total) {
+        count.textContent = `${visible} project${visible === 1 ? '' : 's'} visible`;
+        // keep small stat if present
+        const stat = document.getElementById('stat-projects');
+        if (stat) stat.textContent = String(total);
+      }
+
+      function renderApps(apps) {
+        grid.innerHTML = '';
+        apps.forEach(app => grid.appendChild(makeCard(app)));
+        filterCards();
+      }
+
+      function filterCards() {
+        const q = input.value.trim().toLowerCase();
+        const cards = [...grid.querySelectorAll('.project-card')];
+        let visible = 0;
+        cards.forEach(card => {
+          const text = `${card.dataset.name} ${card.dataset.tags}`.toLowerCase();
+          const show = text.includes(q);
+          card.style.display = show ? 'flex' : 'none';
+          if (show) visible += 1;
+        });
+        updateCount(visible, cards.length);
+      }
+
+      input.addEventListener('input', filterCards);
+
+      // load apps.json and render; fallback to minimal list if fetch fails
+      fetch('apps.json').then(r => {
+        if (!r.ok) throw new Error('no json');
+        return r.json();
+      }).then(apps => renderApps(apps)).catch(() => {
+        // minimal fallback including Todo app
+        const fallback = [
+          { name: 'Calculator', folder: 'Calculator', description: 'Calculator' },
+          { name: 'Todo App', folder: 'Todo app', description: 'A simple Todo list' }
+        ];
+        renderApps(fallback);
       });
-      updateCount(visible);
-    }
-
-    input.addEventListener('input', filterCards);
-    updateCount(cards.length);
+    })();
   </script>
 </body>
 </html>
