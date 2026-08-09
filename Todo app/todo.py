@@ -26,7 +26,7 @@ def todo():
     def add_task():
         try:
             print('\nEnter the task to add: ')
-            t = input().strip()
+            t = input().lower().strip()
             if not t:
                 print('\nEmpty task not added.')
                 return
@@ -39,7 +39,7 @@ def todo():
     def delete_task():
         try:
             print('\nEnter the task for deletion: ')
-            t = input().strip()
+            t = input().lower().strip()
             if not t:
                 print('\nNo task entered.')
                 return
