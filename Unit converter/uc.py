@@ -108,6 +108,117 @@ data_units = {
 }
 
 
+def length(a,b,t):
+
+    try:
+        if b not in length_units or t not in length_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * length_units[t] / length_units[b]
+        print(result)
+    except Exception as e:
+        return f'Unexpected error occured: {e}'
+    
+def mass(a,b,t):
+
+    try:
+        if b not in mass_units or t not in mass_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * length_units[t] / length_units[b]
+        print(result)
+    except Exception as e:
+            return f'Unexpected error occured: {e}'
+
+def temp(a,b,t):
+
+    try:
+        if b not in temperature_units or t not in temperature_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * temperature_units[t] / temperature_units[b]
+        print(result)
+    except Exception as e:
+            return f'Unexpected error occured: {e}'
+
+def time(a,b,t):
+
+    try:
+        if b not in time_units or t not in time_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * time_units[t] / time_units[b]
+        print(result)
+    except Exception as e:
+            return f'Unexpected error occured: {e}'
+
+def speed(a,b,t):
+
+    try:
+        if b not in speed_units or t not in speed_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * speed_units[t] / speed_units[b]
+        print(result)
+    except Exception as e:
+            return f'Unexpected error occured: {e}'
+
+def area(a,b,t):
+
+    try:
+        if b not in area_units or t not in area_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * area_units[t] / area_units[b]
+        print(result)
+    except Exception as e:
+            return f'Unexpected error occured: {e}'
+
+def volume(a,b,t):
+
+    try:
+        if b not in volume_units or t not in volume_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * volume_units[t] / volume_units[b]
+        print(result)
+    except Exception as e:
+            return f'Unexpected error occured: {e}'
+
+def energy(a,b,t):
+
+    try:
+        if b not in energy_units or t not in energy_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * energy_units[t] / energy_units[b]
+        print(result)
+    except Exception as e:
+            return f'Unexpected error occured: {e}'
+
+def pressure(a,b,t):
+
+    try:
+        if b not in pressure_units or t not in pressure_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * pressure_units[t] / pressure_units[b]
+        print(result)
+    except Exception as e:
+            return f'Unexpected error occured: {e}'
+
+def data(a,b,t):
+
+    try:
+        if b not in data_units or t not in data_units:
+            raise ValueError('Invalid unit provided')
+
+        result = a * data_units[t] / data_units[b]
+        print(result)
+    except Exception as e:
+            return f'Unexpected error occured: {e}'
+
+
 def start():
 
     try:
@@ -123,9 +234,18 @@ def start():
         print('9 -> Pressure')
         print('10 -> Data/Storage\n')
         n = int(input())
+        a = float(input('\nEnter the numeric Value: '))
+        b = input('Enter the numeric value unit: ').lower()
+        t = input('Enter the target unit: ').lower()
+
+        b.replace(' ', '')
+        t.replace(' ', '')
+
+
+        
 
     except ValueError:
-        print('Invalid input LOL!')
+        print('Invalid input LOL!, please enter numeric value')
     except Exception as e:
         print(f'\nUnexpected Error occurred, {e}')
 
@@ -144,3 +264,5 @@ def converter():
         return
 
 
+while True:
+     converter()
