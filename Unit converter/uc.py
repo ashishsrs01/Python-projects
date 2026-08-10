@@ -268,9 +268,16 @@ data_units = {
 }
 
 
+def normalize_unit(unit):
+    return " ".join(unit.strip().lower().split())
+
+
 def length(a,b,t):
 
     try:
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+
         if b not in length_units or t not in length_units:
             raise ValueError('Invalid unit provided')
 
@@ -282,10 +289,13 @@ def length(a,b,t):
 def mass(a,b,t):
 
     try:
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+
         if b not in mass_units or t not in mass_units:
             raise ValueError('Invalid unit provided')
 
-        result = a * length_units[t] / length_units[b]
+        result = a * mass_units[t] / mass_units[b]
         print(result)
     except Exception as e:
             return f'Unexpected error occured: {e}'
@@ -293,10 +303,14 @@ def mass(a,b,t):
 def temp(a,b,t):
 
     try:
-        if b not in temperature_units or t not in temperature_units:
-            raise ValueError('Invalid unit provided')
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+        key = (b, t)
 
-        result = a * temperature_units[t] / temperature_units[b]
+        if key not in temperature_units:
+            raise ValueError('Invalid temperature unit conversion')
+
+        result = temperature_units[key](a)
         print(result)
     except Exception as e:
             return f'Unexpected error occured: {e}'
@@ -304,6 +318,9 @@ def temp(a,b,t):
 def time(a,b,t):
 
     try:
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+
         if b not in time_units or t not in time_units:
             raise ValueError('Invalid unit provided')
 
@@ -315,6 +332,9 @@ def time(a,b,t):
 def speed(a,b,t):
 
     try:
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+
         if b not in speed_units or t not in speed_units:
             raise ValueError('Invalid unit provided')
 
@@ -326,6 +346,9 @@ def speed(a,b,t):
 def area(a,b,t):
 
     try:
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+
         if b not in area_units or t not in area_units:
             raise ValueError('Invalid unit provided')
 
@@ -337,6 +360,9 @@ def area(a,b,t):
 def volume(a,b,t):
 
     try:
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+
         if b not in volume_units or t not in volume_units:
             raise ValueError('Invalid unit provided')
 
@@ -348,6 +374,9 @@ def volume(a,b,t):
 def energy(a,b,t):
 
     try:
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+
         if b not in energy_units or t not in energy_units:
             raise ValueError('Invalid unit provided')
 
@@ -359,6 +388,9 @@ def energy(a,b,t):
 def pressure(a,b,t):
 
     try:
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+
         if b not in pressure_units or t not in pressure_units:
             raise ValueError('Invalid unit provided')
 
@@ -370,6 +402,9 @@ def pressure(a,b,t):
 def data(a,b,t):
 
     try:
+        b = normalize_unit(b)
+        t = normalize_unit(t)
+
         if b not in data_units or t not in data_units:
             raise ValueError('Invalid unit provided')
 
@@ -395,32 +430,32 @@ def start():
         print('10 -> Data/Storage\n')
         n = int(input())
         a = float(input('\nEnter the numeric Value: '))
-        b = input('Enter the numeric value unit: ').lower()
-        t = input('Enter the target unit: ').lower()
+        b = input('Enter the numeric value unit: ')
+        t = input('Enter the target unit: ')
 
-        b.replace(' ', '')
-        t.replace(' ', '')
+        b = normalize_unit(b)
+        t = normalize_unit(t)
 
         if n == 1:
-             length()
+             length(a, b, t)
         elif n == 2:
-             mass()
+             mass(a, b, t)
         elif n == 3:
-             temp()
+             temp(a, b, t)
         elif n == 4:
-             time()
+             time(a, b, t)
         elif n == 5:
-             speed()
+             speed(a, b, t)
         elif n == 6:
-             area()
+             area(a, b, t)
         elif n == 7:
-             volume()
+             volume(a, b, t)
         elif n == 8:
-             energy()
+             energy(a, b, t)
         elif n == 9:
-             pressure()
+             pressure(a, b, t)
         elif n == 10:
-             data()
+             data(a, b, t)
         else:
              print('Invalid unit type number')
         
@@ -445,5 +480,6 @@ def converter():
         return
 
 
-while True:
-     converter()
+if __name__ == '__main__':
+    while True:
+        converter()
