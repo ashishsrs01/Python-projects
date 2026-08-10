@@ -401,7 +401,28 @@ def start():
         b.replace(' ', '')
         t.replace(' ', '')
 
-
+        if n == 1:
+             length()
+        elif n == 2:
+             mass()
+        elif n == 3:
+             temp()
+        elif n == 4:
+             time()
+        elif n == 5:
+             speed()
+        elif n == 6:
+             area()
+        elif n == 7:
+             volume()
+        elif n == 8:
+             energy()
+        elif n == 9:
+             pressure()
+        elif n == 10:
+             data()
+        else:
+             print('Invalid unit type number')
         
 
     except ValueError:
