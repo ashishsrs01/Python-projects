@@ -64,6 +64,7 @@ const fallbackApps = [
   { name: "Text to Speech", folder: "Text to speech app", icon: "🔊", color: "rose", tags: ["web"], description: "Hear your text aloud." },
   { name: "BG Remover", folder: "BG remover", icon: "🖼️", color: "blue", tags: ["web"], description: "Remove solid backgrounds in the browser." },
   { name: "Currency Converter", folder: "currency converter", icon: "💱", color: "emerald", tags: ["finance"], description: "Convert currencies with live exchange rates." }
+  ,{ name: "Unit Converter", folder: "Unit converter", icon: "📏", color: "emerald", tags: ["utility"], description: "Convert units across length, mass, temperature, time, speed, area, volume, energy, pressure, and data storage." }
   ,{ name: "Todo App", folder: "Todo app", icon: "📝", color: "amber", tags: ["web","productivity"], description: "A simple Todo list with add/delete and persistent storage in the browser." }
 ];
 

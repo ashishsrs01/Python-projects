@@ -73,6 +73,16 @@
   }
   ,
   {
+    "id": "unit-converter",
+    "name": "Unit Converter",
+    "folder": "Unit converter",
+    "icon": "📏",
+    "color": "emerald",
+    "tags": ["web", "utility"],
+    "description": "Convert units across length, mass, temperature, time, speed, area, volume, energy, pressure, and data storage."
+  }
+  ,
+  {
     "id": "todo",
     "name": "Todo App",
     "folder": "Todo app",
