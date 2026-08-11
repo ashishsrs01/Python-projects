@@ -1,5 +1,7 @@
 # Python Projects
 
+![Python Projects screenshot](assets/screenshot.png)
+
 A curated collection of small Python programs (CLI and Tkinter) with matching browser demos so anyone can learn and try the apps without installing anything. This repository is primarily a learning/portfolio collection — the Python code is the main content and the site is a lightweight GitHub Pages frontend.
 
 Live demo: https://ashishsrs01.github.io/Python-projects/
