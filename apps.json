@@ -91,4 +91,14 @@
     "tags": ["web", "productivity"],
     "description": "A simple Todo list with add/delete and persistent storage in the browser."
   }
+  ,
+  {
+    "id": "number-guessing",
+    "name": "Number Guessing Game",
+    "folder": "Number gussing app",
+    "icon": "🎯",
+    "color": "violet",
+    "tags": ["web", "game"],
+    "description": "Guess the number between 1 and 100 with feedback and attempt tracking."
+  }
 ]

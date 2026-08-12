@@ -32,6 +32,7 @@ Each project folder contains a Python source file and an `index.html` demo. See 
 | Currency Converter | `currency converter/cc.py` | `currency converter/index.html` |
 | Unit Converter | `Unit converter/uc.py` | `Unit converter/index.html` |
 | Todo App | `Todo app/todo.py` | `Todo app/index.html` |
+| Number Guessing Game | `Number gussing app/ng.py` | `Number gussing app/index.html` |
 
 For details and usage examples open the folder for any project.
 
