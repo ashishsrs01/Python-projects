@@ -10,27 +10,46 @@ def number_guessing_game():
     print("Can you guess it?\n")
     
     while not guessed:
-        guess = int(input("Enter your guess: "))
-        
-        attempts += 1
-        
-        if guess == secret_number:
-            print(f"\n🎉 Congratulations! You guessed the number {secret_number} in {attempts} attempts!")
-            guessed = True
-        elif guess < secret_number:
-            print(f"Too low! Try again.\n")
-        else:
-            print(f"Too high! Try again.\n")
+        try:
+            guess = int(input("Enter your guess: "))
+            
+            if guess < 1 or guess > 100:
+                print("Please enter a number between 1 and 100.\n")
+                continue
+            
+            attempts += 1
+            
+            if guess == secret_number:
+                print(f"\n🎉 Congratulations! You guessed the number {secret_number} in {attempts} attempts!")
+                guessed = True
+            elif guess < secret_number:
+                print(f"Too low! Try again.\n")
+            else:
+                print(f"Too high! Try again.\n")
+        except ValueError:
+            print("Invalid input! Please enter a valid number.\n")
 
 def main():
     play_again = True
     
     while play_again:
-        number_guessing_game()
+        try:
+            number_guessing_game()
+        except Exception as e:
+            print(f"An error occurred: {e}")
         
-        response = input("\nDo you want to play again? (yes/no): ").lower()
-        if response != 'yes' and response != 'y':
-            play_again = False
+        while True:
+            try:
+                response = input("\nDo you want to play again? (yes/no): ").lower().strip()
+                if response in ['yes', 'y']:
+                    break
+                elif response in ['no', 'n']:
+                    play_again = False
+                    break
+                else:
+                    print("Please enter 'yes' or 'no'.")
+            except Exception as e:
+                print(f"Error reading input: {e}")
     
     print("\nThanks for playing! Goodbye!")
 
